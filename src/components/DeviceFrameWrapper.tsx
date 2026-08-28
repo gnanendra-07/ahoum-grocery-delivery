@@ -18,14 +18,15 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
       setIsDesktop(desktop);
       if (desktop) {
         // Tight padding around phone frame for maximal preview size
-        const paddingW = 20;
-        const paddingH = 20;
+        const paddingW = 24;
+        const paddingH = 24;
         const availableW = window.innerWidth - paddingW;
         const availableH = window.innerHeight - paddingH;
         const scaleW = availableW / 414;
         const scaleH = availableH / 896;
-        const fitScale = Math.min(1, Math.min(scaleW, scaleH));
-        setScale(Math.max(0.45, fitScale));
+        // Allow scaling UP or DOWN to fill PC screen height while preserving 414:896 aspect ratio
+        const fitScale = Math.min(scaleW, scaleH);
+        setScale(Math.max(0.5, fitScale));
       } else {
         setScale(1);
       }
