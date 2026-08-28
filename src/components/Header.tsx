@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { ShoppingBag, MapPin, Search, AlertTriangle, ShieldCheck, Heart, Home, LayoutGrid } from 'lucide-react';
+import { ShoppingBag, MapPin, Search, AlertTriangle, ShieldCheck, Heart, Home, LayoutGrid, User as UserIcon, LogOut } from 'lucide-react';
 import { useCartStore } from '../stores/useCartStore';
 import { useFavoritesStore } from '../stores/useFavoritesStore';
 import { useAuthStore } from '../stores/useAuthStore';
@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
   const navigate = useNavigate();
   const totalItems = useCartStore((state) => state.getTotalItemsCount());
   const favoriteCount = useFavoritesStore((state) => state.favoriteIds.length);
-  const { activeAddress, isSimulatingFailures, toggleSimulateFailures } = useAuthStore();
+  const { user, isAuthenticated, activeAddress, isSimulatingFailures, toggleSimulateFailures, logout } = useAuthStore();
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm">
@@ -44,13 +44,19 @@ export const Header: React.FC = () => {
               10 Min
             </span>
           </Link>
-          
-          <div className="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-200/60 max-w-[240px] truncate">
+
+          {/* Location Chip */}
+          <button
+            onClick={() => navigate('/auth/location')}
+            className="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/60 max-w-[240px] truncate transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            title="Change Delivery Location"
+            type="button"
+          >
             <MapPin className="w-3.5 h-3.5 text-brand-600 flex-shrink-0" />
             <span className="font-medium text-gray-700 truncate">
               {activeAddress ? `${activeAddress.label} • ${activeAddress.street}` : 'Select Location'}
             </span>
-          </div>
+          </button>
         </div>
 
         {/* Center: Desktop Navigation Links */}
@@ -97,9 +103,9 @@ export const Header: React.FC = () => {
           </NavLink>
         </nav>
 
-        {/* Right: Search Bar & Actions */}
+        {/* Right: Search, Auth & Cart */}
         <div className="flex items-center gap-2">
-          {/* Quick Search trigger button / bar */}
+          {/* Quick Search */}
           <button
             onClick={() => navigate('/search')}
             className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-gray-500 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
@@ -110,7 +116,34 @@ export const Header: React.FC = () => {
             <span className="hidden sm:inline text-gray-400">Search groceries...</span>
           </button>
 
-          {/* Dev Failure Toggle Button */}
+          {/* User Auth Action Chip */}
+          {isAuthenticated && user ? (
+            <div className="hidden sm:flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1 text-xs">
+              <UserIcon className="w-3.5 h-3.5 text-brand-600" />
+              <span className="font-bold text-gray-800 max-w-[90px] truncate">{user.name.split(' ')[0]}</span>
+              <button
+                onClick={() => {
+                  logout();
+                  navigate('/welcome');
+                }}
+                title="Log Out"
+                className="text-gray-400 hover:text-red-600 ml-1 p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+                type="button"
+              >
+                <LogOut className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/welcome"
+              className="hidden sm:flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            >
+              <UserIcon className="w-3.5 h-3.5" />
+              <span>Sign In</span>
+            </Link>
+          )}
+
+          {/* Dev Failure Toggle */}
           <button
             onClick={toggleSimulateFailures}
             title={isSimulatingFailures ? 'Disable Network Failures' : 'Enable Network Failures'}
