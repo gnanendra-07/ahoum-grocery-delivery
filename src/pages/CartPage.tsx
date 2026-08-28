@@ -55,10 +55,10 @@ export const CartPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Mobile Frame Cart Container */}
-      <div className="space-y-4">
-        {/* Cart Item List */}
-        <div className="space-y-3">
+      {/* Responsive 2-Column Container for Desktop */}
+      <div className="md:grid md:grid-cols-3 md:gap-8 md:items-start space-y-6 md:space-y-0">
+        {/* Left Column (2 cols): Cart Item List */}
+        <div className="md:col-span-2 space-y-3">
           {items.map(({ product, quantity }) => {
             const itemPrice = product.discountPrice ?? product.price;
             const isMaxStock = quantity >= product.stock;
@@ -122,8 +122,8 @@ export const CartPage: React.FC = () => {
           })}
         </div>
 
-        {/* Bill Breakdown & Checkout Action */}
-        <div className="space-y-4">
+        {/* Right Column (1 col): Bill Breakdown & Checkout Action */}
+        <div className="md:col-span-1 md:sticky md:top-24 space-y-4">
           <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3 text-xs sm:text-sm">
             <h3 className="font-bold text-gray-900 border-b border-gray-100 pb-3 text-sm">
               Bill Summary

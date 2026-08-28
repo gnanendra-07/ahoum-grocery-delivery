@@ -72,10 +72,10 @@ export const CheckoutPage: React.FC = () => {
         <h1 className="text-xl font-bold text-gray-900">Checkout</h1>
       </div>
 
-      {/* Mobile Frame Checkout Container */}
-      <div className="space-y-4">
-        {/* Delivery Address & Payment Options */}
-        <div className="space-y-4">
+      {/* Desktop 2-Column Grid */}
+      <div className="md:grid md:grid-cols-3 md:gap-8 md:items-start space-y-6 md:space-y-0">
+        {/* Left Column (2 cols): Delivery Address & Payment Options */}
+        <div className="md:col-span-2 space-y-6">
           {/* Delivery Address Box */}
           <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3">
             <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
@@ -218,8 +218,8 @@ export const CheckoutPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Order Summary & Action Button */}
-        <div className="space-y-4">
+        {/* Right Column (1 col): Order Summary & Action Button */}
+        <div className="md:col-span-1 md:sticky md:top-24 space-y-4">
           <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3 text-xs sm:text-sm">
             <h3 className="font-bold text-gray-900 border-b border-gray-100 pb-3 text-sm">
               Order Summary

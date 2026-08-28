@@ -100,8 +100,8 @@ export const ProductDetailPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Mobile Frame Container */}
-      <div className="space-y-5">
+      {/* Desktop 2-Column Grid Container */}
+      <div className="md:grid md:grid-cols-2 md:gap-8 md:items-start space-y-6 md:space-y-0">
         {/* Left Column: Gallery */}
         <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm space-y-3">
           <div className="aspect-square w-full rounded-2xl overflow-hidden bg-gray-50 flex items-center justify-center relative">

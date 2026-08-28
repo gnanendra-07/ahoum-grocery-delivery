@@ -72,13 +72,13 @@ export const HomePage: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-3 gap-3 animate-pulse">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 md:gap-4 animate-pulse">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="bg-white p-3 rounded-2xl border border-gray-100 h-28 bg-gray-100" />
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 md:gap-4">
             {categories.map((cat) => (
               <Link
                 key={cat.id}
@@ -92,7 +92,7 @@ export const HomePage: React.FC = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <span className="text-[11px] font-semibold text-gray-800 line-clamp-1 group-hover:text-brand-600">
+                <span className="text-[11px] sm:text-xs font-semibold text-gray-800 line-clamp-1 group-hover:text-brand-600">
                   {cat.name}
                 </span>
               </Link>
@@ -104,14 +104,14 @@ export const HomePage: React.FC = () => {
       {/* Popular Products */}
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-bold text-gray-900 flex items-center gap-1.5">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-1.5">
             <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
             <span>Popular Right Now</span>
           </h2>
         </div>
 
         {loading ? (
-          <SkeletonGrid count={4} />
+          <SkeletonGrid count={5} />
         ) : error ? (
           <ErrorMessage title="Failed to load items" message={error} onRetry={fetchData} />
         ) : popularProducts.length === 0 ? (
@@ -120,7 +120,7 @@ export const HomePage: React.FC = () => {
             <h3 className="text-sm font-bold text-gray-800">No popular products found</h3>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
             {popularProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
