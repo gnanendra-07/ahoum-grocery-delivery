@@ -30,9 +30,9 @@ export const OnboardingPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full flex-1 flex flex-col justify-between bg-white text-gray-900 overflow-hidden no-scrollbar relative">
-      {/* Top Hero Delivery Worker Image Section (56% frame height) */}
-      <div className="w-full h-[56%] relative bg-[#53B175]/10 overflow-hidden flex-shrink-0">
+    <div className="w-full h-full min-h-[80vh] flex-1 flex flex-col justify-between bg-white text-gray-900 overflow-hidden relative">
+      {/* Top Hero Delivery Worker Image Section */}
+      <div className="w-full h-[52%] min-h-[320px] relative bg-[#53B175]/10 overflow-hidden flex-shrink-0">
         {!hasImageError ? (
           <img
             src={HERO_IMAGES[imageIndex]}
@@ -57,7 +57,7 @@ export const OnboardingPage: React.FC = () => {
       </div>
 
       {/* Content Section */}
-      <div className="px-8 pb-8 pt-0 text-center flex-1 flex flex-col justify-between items-center z-10">
+      <div className="px-6 pb-8 pt-0 text-center flex-1 flex flex-col justify-between items-center z-10">
         {/* Brand Carrot / Icon & Heading Stack */}
         <div className="space-y-3 -mt-7 flex flex-col items-center">
           <div className="w-12 h-12 bg-[#53B175] text-white rounded-2xl flex items-center justify-center shadow-lg border-2 border-white">
@@ -75,7 +75,7 @@ export const OnboardingPage: React.FC = () => {
         </div>
 
         {/* Green Get Started Button */}
-        <div className="w-full pt-4">
+        <div className="w-full pt-4 max-w-sm">
           <button
             onClick={handleGetStarted}
             className="w-full py-4 bg-[#53B175] hover:bg-[#489d67] text-white text-base font-extrabold rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] active:scale-[0.99]"
