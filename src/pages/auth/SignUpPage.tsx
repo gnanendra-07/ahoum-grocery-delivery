@@ -1,31 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, User, Mail, Smartphone, Lock, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ShoppingBag, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../../stores/useAuthStore';
 
 export const SignUpPage: React.FC = () => {
   const navigate = useNavigate();
   const signUpUser = useAuthStore((state) => state.signUpUser);
 
-  const [name, setName] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [phone, setPhone] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [agreeTerms, setAgreeTerms] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      setError('Please enter your full name.');
+    if (!username.trim()) {
+      setError('Please enter your username.');
       return;
     }
     if (!email || !email.includes('@')) {
       setError('Please enter a valid email address.');
-      return;
-    }
-    if (!phone || phone.length < 7) {
-      setError('Please enter a valid phone number.');
       return;
     }
     if (!password || password.length < 4) {
@@ -33,122 +29,108 @@ export const SignUpPage: React.FC = () => {
       return;
     }
     if (!agreeTerms) {
-      setError('You must accept the Terms & Conditions to create an account.');
+      setError('You must accept Terms of Service.');
       return;
     }
 
     setError(null);
-    signUpUser(name.trim(), email.trim(), phone.trim());
+    signUpUser(username.trim(), email.trim(), '+1 (555) 019-2834');
     navigate('/auth/location');
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen sm:min-h-[80vh] flex flex-col justify-between p-6 bg-white sm:rounded-3xl border border-gray-100 shadow-md space-y-6">
-      {/* Header */}
+    <div className="w-full h-full min-h-[896px] bg-white text-gray-900 flex flex-col justify-between p-6 relative">
+      {/* Top Bar with Back Chevron */}
       <div>
         <button
           onClick={() => navigate('/auth')}
-          className="p-2.5 bg-gray-50 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 mb-4"
-          aria-label="Go back to auth options"
+          className="p-2 text-gray-700 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] mb-2"
+          aria-label="Go back to auth choices"
           type="button"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ChevronLeft className="w-6 h-6" />
         </button>
 
-        <div className="space-y-1">
-          <h1 className="text-2xl font-black text-gray-900">Create New Account</h1>
-          <p className="text-xs text-gray-500">
-            Sign up to get fresh groceries delivered in 10 minutes.
-          </p>
+        {/* Brand Icon Header */}
+        <div className="text-center space-y-2 mb-4">
+          <div className="w-14 h-14 bg-emerald-50 text-[#53B175] rounded-2xl mx-auto flex items-center justify-center border border-emerald-100 shadow-sm">
+            <ShoppingBag className="w-7 h-7" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-gray-900 pt-1">Sign Up</h1>
+          <p className="text-xs text-gray-500 font-medium">Enter your credentials to continue</p>
         </div>
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-3.5 my-auto">
+      <form onSubmit={handleSubmit} className="space-y-4 my-auto">
         <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-700 block">Full Name</label>
-          <div className="relative">
-            <User className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                if (error) setError(null);
-              }}
-              placeholder="Alex Johnson"
-              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 shadow-sm"
-              autoFocus
-              required
-            />
-          </div>
+          <label className="text-xs font-bold text-gray-500 block">Username</label>
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => {
+              setUsername(e.target.value);
+              if (error) setError(null);
+            }}
+            placeholder="Aftab Hossain"
+            className="w-full p-3 bg-gray-50 border-b-2 border-gray-200 text-sm font-bold text-gray-900 focus:border-[#53B175] focus:bg-white focus:outline-none transition-colors"
+            autoFocus
+            required
+          />
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-700 block">Email Address</label>
-          <div className="relative">
-            <Mail className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (error) setError(null);
-              }}
-              placeholder="alex.johnson@example.com"
-              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 shadow-sm"
-              required
-            />
-          </div>
+          <label className="text-xs font-bold text-gray-500 block">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (error) setError(null);
+            }}
+            placeholder="imran@gmail.com"
+            className="w-full p-3 bg-gray-50 border-b-2 border-gray-200 text-sm font-bold text-gray-900 focus:border-[#53B175] focus:bg-white focus:outline-none transition-colors"
+            required
+          />
         </div>
 
         <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-700 block">Mobile Phone</label>
+          <label className="text-xs font-bold text-gray-500 block">Password</label>
           <div className="relative">
-            <Smartphone className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
-              type="tel"
-              value={phone}
-              onChange={(e) => {
-                setPhone(e.target.value);
-                if (error) setError(null);
-              }}
-              placeholder="+1 (555) 019-2834"
-              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 shadow-sm"
-              required
-            />
-          </div>
-        </div>
-
-        <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-700 block">Password</label>
-          <div className="relative">
-            <Lock className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 if (error) setError(null);
               }}
-              placeholder="Create a strong password"
-              className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 shadow-sm"
+              placeholder="••••••••"
+              className="w-full p-3 pr-10 bg-gray-50 border-b-2 border-gray-200 text-sm font-bold text-gray-900 focus:border-[#53B175] focus:bg-white focus:outline-none transition-colors"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] rounded"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
         </div>
 
-        <div className="pt-1">
-          <label className="flex items-start gap-2 cursor-pointer text-[11px] text-gray-600 leading-snug">
+        <div className="pt-2">
+          <label className="flex items-start gap-2 cursor-pointer text-xs text-gray-600 font-medium leading-snug">
             <input
               type="checkbox"
               checked={agreeTerms}
               onChange={(e) => setAgreeTerms(e.target.checked)}
-              className="accent-brand-600 w-4 h-4 rounded mt-0.5"
+              className="accent-[#53B175] w-4 h-4 rounded mt-0.5"
             />
             <span>
-              I agree to the Ahoum <span className="font-bold text-brand-600">Terms of Service</span> and{' '}
-              <span className="font-bold text-brand-600">Privacy Policy</span>.
+              By continuing you agree to our{' '}
+              <span className="text-[#53B175] font-bold">Terms of Service</span> and{' '}
+              <span className="text-[#53B175] font-bold">Privacy Policy</span>.
             </span>
           </label>
         </div>
@@ -157,21 +139,19 @@ export const SignUpPage: React.FC = () => {
 
         <button
           type="submit"
-          className="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-bold rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          className="w-full py-4 bg-[#53B175] hover:bg-[#489d67] text-white text-base font-extrabold rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
         >
-          <span>Create Account</span>
-          <ArrowRight className="w-4 h-4" />
+          <span>Sign Up</span>
+          <ArrowRight className="w-5 h-5" />
         </button>
       </form>
 
-      {/* Footer Switch */}
-      <div className="text-center text-xs border-t border-gray-100 pt-4">
-        <p className="text-gray-500 font-medium">
-          Already have an account?{' '}
-          <Link to="/login" className="text-brand-600 font-bold hover:underline">
-            Log In
-          </Link>
-        </p>
+      {/* Footer Switch to Log In */}
+      <div className="pb-4 text-center text-xs font-bold text-gray-600">
+        Already have an account?{' '}
+        <Link to="/login" className="text-[#53B175] hover:underline">
+          Log In
+        </Link>
       </div>
     </div>
   );

@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
 import { AuthLayout } from '../layouts/AuthLayout';
+import { useAuthStore } from '../stores/useAuthStore';
 
 // Grocery App Main Pages
 import { HomePage } from '../pages/HomePage';
@@ -24,12 +25,20 @@ import { LocationSelectionPage } from '../pages/auth/LocationSelectionPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { SignUpPage } from '../pages/auth/SignUpPage';
 
+const RootHomeGuard: React.FC = () => {
+  const { isAuthenticated, hasCompletedOnboarding } = useAuthStore();
+  if (!isAuthenticated && !hasCompletedOnboarding) {
+    return <Navigate to="/welcome" replace />;
+  }
+  return <HomePage />;
+};
+
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
       {/* 1. Main Grocery App Routes (Includes Header & BottomNav) */}
       <Route path="/" element={<MainLayout />}>
-        <Route index element={<HomePage />} />
+        <Route index element={<RootHomeGuard />} />
         <Route path="category/:slug" element={<CategoryPage />} />
         <Route path="product/:id" element={<ProductDetailPage />} />
         <Route path="search" element={<SearchPage />} />
@@ -40,7 +49,7 @@ export const AppRoutes: React.FC = () => {
         <Route path="checkout/failure" element={<CheckoutFailurePage />} />
       </Route>
 
-      {/* 2. Dedicated Auth & Onboarding Routes (Full-screen, NO Header/BottomNav) */}
+      {/* 2. Dedicated Auth & Onboarding Routes (414 x 896 Mobile App Frame, NO Header/BottomNav) */}
       <Route element={<AuthLayout />}>
         <Route path="welcome" element={<SplashScreenPage />} />
         <Route path="onboarding" element={<OnboardingPage />} />

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, CheckCircle2, RefreshCw, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useAuthStore } from '../../stores/useAuthStore';
 
 export const OtpVerificationPage: React.FC = () => {
@@ -32,7 +32,6 @@ export const OtpVerificationPage: React.FC = () => {
     setOtp(newOtp);
     if (error) setError(null);
 
-    // Auto focus next input
     const nextTarget = inputRefs[index + 1];
     if (char && index < 3 && nextTarget && nextTarget.current) {
       nextTarget.current.focus();
@@ -50,7 +49,7 @@ export const OtpVerificationPage: React.FC = () => {
     if (e) e.preventDefault();
     const fullOtp = otp.join('');
     if (fullOtp.length !== 4) {
-      setError('Please enter all 4 digits of the verification code.');
+      setError('Please enter all 4 digits of the code.');
       return;
     }
 
@@ -58,36 +57,32 @@ export const OtpVerificationPage: React.FC = () => {
     if (success) {
       navigate('/auth/location');
     } else {
-      setError('Invalid verification code. Please try again.');
+      setError('Invalid verification code.');
     }
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen sm:min-h-[80vh] flex flex-col justify-between p-6 bg-white sm:rounded-3xl border border-gray-100 shadow-md space-y-6">
-      {/* Header */}
+    <div className="w-full h-full min-h-[896px] bg-white text-gray-900 flex flex-col justify-between p-6 relative">
+      {/* Top Bar with Back Chevron */}
       <div>
         <button
           onClick={() => navigate('/auth/phone')}
-          className="p-2.5 bg-gray-50 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 mb-4"
-          aria-label="Go back to phone input"
+          className="p-2 text-gray-700 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] mb-6"
+          aria-label="Go back to mobile number input"
           type="button"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ChevronLeft className="w-6 h-6" />
         </button>
 
-        <div className="space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">
-            Step 2 of 3
-          </span>
-          <h1 className="text-2xl font-black text-gray-900 pt-1">4-Digit Verification</h1>
-          <p className="text-xs text-gray-500">
-            Enter the 4-digit code sent to{' '}
-            <span className="font-bold text-gray-900">{tempPhone || '+1 (555) 019-2834'}</span>
+        <div className="space-y-2">
+          <h1 className="text-2xl font-extrabold text-gray-900">Enter your 4-digit code</h1>
+          <p className="text-xs text-gray-500 font-medium">
+            Code sent to <span className="font-bold text-gray-900">{tempPhone || '+1 (555) 019-2834'}</span>
           </p>
         </div>
       </div>
 
-      {/* 4 Digit Boxes Form */}
+      {/* Code Input Boxes */}
       <form onSubmit={handleVerify} className="space-y-6 my-auto">
         <div className="flex justify-center gap-3">
           {otp.map((digit, idx) => (
@@ -100,43 +95,41 @@ export const OtpVerificationPage: React.FC = () => {
               value={digit}
               onChange={(e) => handleChange(idx, e.target.value)}
               onKeyDown={(e) => handleKeyDown(idx, e)}
-              className="w-14 h-16 text-center text-2xl font-black bg-gray-50 border-2 border-gray-200 rounded-2xl focus:border-brand-600 focus:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-all shadow-sm"
+              className="w-14 h-16 text-center text-2xl font-black bg-gray-50 border-b-2 border-gray-300 focus:border-[#53B175] focus:bg-white focus:outline-none transition-all"
               autoFocus={idx === 0}
-              aria-label={`Digit ${idx + 1} of verification code`}
+              aria-label={`Digit ${idx + 1}`}
             />
           ))}
         </div>
 
         {error && <p className="text-xs text-red-600 font-semibold text-center">{error}</p>}
 
-        <button
-          type="submit"
-          className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-bold rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-        >
-          <span>Verify & Continue</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </form>
-
-      {/* Resend Timer & Demo Hint */}
-      <div className="text-center space-y-2 border-t border-gray-100 pt-4">
-        {resendTimer > 0 ? (
-          <p className="text-xs text-gray-400 font-medium">
-            Resend code in <span className="font-bold text-brand-600">{resendTimer}s</span>
-          </p>
-        ) : (
+        <div className="flex items-center justify-between pt-4">
           <button
             onClick={() => setResendTimer(30)}
-            className="text-xs font-bold text-brand-600 hover:underline inline-flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+            disabled={resendTimer > 0}
+            className="text-xs font-bold text-[#53B175] hover:underline disabled:opacity-50 flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] rounded"
             type="button"
           >
-            <RefreshCw className="w-3.5 h-3.5" /> Resend Verification Code
+            <RefreshCw className="w-3.5 h-3.5" />
+            {resendTimer > 0 ? `Resend Code (${resendTimer}s)` : 'Resend Code'}
           </button>
-        )}
 
-        <div className="bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-[11px] text-amber-800 font-medium flex items-center justify-center gap-1">
+          <button
+            type="submit"
+            className="w-14 h-14 bg-[#53B175] hover:bg-[#489d67] text-white rounded-full flex items-center justify-center shadow-lg transition-transform active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
+            aria-label="Submit verification code"
+          >
+            <ChevronRight className="w-7 h-7" />
+          </button>
+        </div>
+      </form>
+
+      {/* Mock Info */}
+      <div className="pb-4 text-center">
+        <div className="bg-amber-50 p-2.5 rounded-xl border border-amber-200 text-[11px] text-amber-800 font-medium inline-flex items-center justify-center gap-1">
           <CheckCircle2 className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" />
-          <span>Mock Verification: Enter any 4 digits (e.g. 1234)</span>
+          <span>Enter any 4 digits (e.g. 1234)</span>
         </div>
       </div>
     </div>

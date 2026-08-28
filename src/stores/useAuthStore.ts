@@ -66,26 +66,26 @@ const loadSessionFromStorage = (): {
     const raw = localStorage.getItem(AUTH_STORAGE_KEY);
     if (!raw) {
       return {
-        user: mockUser,
-        isAuthenticated: true,
-        hasCompletedOnboarding: true,
-        activeAddress: defaultAddress,
+        user: null,
+        isAuthenticated: false,
+        hasCompletedOnboarding: false,
+        activeAddress: null,
       };
     }
     const parsed = JSON.parse(raw);
     return {
-      user: parsed.user || mockUser,
+      user: parsed.user || null,
       isAuthenticated: Boolean(parsed.isAuthenticated),
-      hasCompletedOnboarding: Boolean(parsed.hasCompletedOnboarding ?? true),
-      activeAddress: parsed.activeAddress || defaultAddress,
+      hasCompletedOnboarding: Boolean(parsed.hasCompletedOnboarding),
+      activeAddress: parsed.activeAddress || null,
     };
   } catch (err) {
     console.error('[AuthStore] Failed to load session from storage:', err);
     return {
-      user: mockUser,
-      isAuthenticated: true,
-      hasCompletedOnboarding: true,
-      activeAddress: defaultAddress,
+      user: null,
+      isAuthenticated: false,
+      hasCompletedOnboarding: false,
+      activeAddress: null,
     };
   }
 };

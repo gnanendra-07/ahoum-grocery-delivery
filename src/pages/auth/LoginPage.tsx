@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Mail, Lock, ArrowRight, Smartphone } from 'lucide-react';
+import { ChevronLeft, ShoppingBag, Eye, EyeOff, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../../stores/useAuthStore';
 
 export const LoginPage: React.FC = () => {
@@ -9,7 +9,7 @@ export const LoginPage: React.FC = () => {
 
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const [rememberMe, setRememberMe] = useState<boolean>(true);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,114 +29,97 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-screen sm:min-h-[80vh] flex flex-col justify-between p-6 bg-white sm:rounded-3xl border border-gray-100 shadow-md space-y-6">
-      {/* Header */}
+    <div className="w-full h-full min-h-[896px] bg-white text-gray-900 flex flex-col justify-between p-6 relative">
+      {/* Top Bar with Back Chevron */}
       <div>
         <button
           onClick={() => navigate('/auth')}
-          className="p-2.5 bg-gray-50 rounded-full border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 mb-4"
-          aria-label="Go back to auth options"
+          className="p-2 text-gray-700 hover:text-gray-900 rounded-full hover:bg-gray-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] mb-4"
+          aria-label="Go back to auth choices"
           type="button"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ChevronLeft className="w-6 h-6" />
         </button>
 
-        <div className="space-y-1">
-          <h1 className="text-2xl font-black text-gray-900">Log In to Account</h1>
-          <p className="text-xs text-gray-500">
-            Welcome back! Enter your login details to continue shopping.
-          </p>
+        {/* Brand Icon Header */}
+        <div className="text-center space-y-2 mb-6">
+          <div className="w-14 h-14 bg-emerald-50 text-[#53B175] rounded-2xl mx-auto flex items-center justify-center border border-emerald-100 shadow-sm">
+            <ShoppingBag className="w-7 h-7" />
+          </div>
+          <h1 className="text-2xl font-extrabold text-gray-900 pt-1">Log In</h1>
+          <p className="text-xs text-gray-500 font-medium">Enter your email address and password</p>
         </div>
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4 my-auto">
+      <form onSubmit={handleSubmit} className="space-y-5 my-auto">
         <div className="space-y-1">
-          <label className="text-xs font-bold text-gray-700 block">Email Address</label>
-          <div className="relative">
-            <Mail className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (error) setError(null);
-              }}
-              placeholder="alex.johnson@example.com"
-              className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 placeholder:text-gray-400 placeholder:font-normal focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 shadow-sm"
-              autoFocus
-              required
-            />
-          </div>
+          <label className="text-xs font-bold text-gray-500 block">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              if (error) setError(null);
+            }}
+            placeholder="imran@gmail.com"
+            className="w-full p-3.5 bg-gray-50 border-b-2 border-gray-200 text-sm font-bold text-gray-900 focus:border-[#53B175] focus:bg-white focus:outline-none transition-colors"
+            autoFocus
+            required
+          />
         </div>
 
         <div className="space-y-1">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-gray-700 block">Password</label>
+            <label className="text-xs font-bold text-gray-500 block">Password</label>
             <button
               type="button"
               onClick={() => alert('Password reset link sent to your email!')}
-              className="text-[11px] font-semibold text-brand-600 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
+              className="text-xs font-bold text-gray-700 hover:text-[#53B175] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] rounded"
             >
-              Forgot password?
+              Forgot Password?
             </button>
           </div>
           <div className="relative">
-            <Lock className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
                 if (error) setError(null);
               }}
               placeholder="••••••••"
-              className="w-full pl-11 pr-4 py-3.5 bg-white border border-gray-200 rounded-2xl text-sm font-bold text-gray-900 placeholder:text-gray-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 shadow-sm"
+              className="w-full p-3.5 pr-10 bg-gray-50 border-b-2 border-gray-200 text-sm font-bold text-gray-900 focus:border-[#53B175] focus:bg-white focus:outline-none transition-colors"
               required
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] rounded"
+              aria-label={showPassword ? 'Hide password' : 'Show password'}
+            >
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
-        </div>
-
-        <div className="flex items-center justify-between pt-1">
-          <label className="flex items-center gap-2 cursor-pointer text-xs text-gray-600 font-medium">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="accent-brand-600 w-4 h-4 rounded"
-            />
-            <span>Remember me</span>
-          </label>
         </div>
 
         {error && <p className="text-xs text-red-600 font-semibold">{error}</p>}
 
         <button
           type="submit"
-          className="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-bold rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          className="w-full py-4 bg-[#53B175] hover:bg-[#489d67] text-white text-base font-extrabold rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
         >
           <span>Log In</span>
-          <ArrowRight className="w-4 h-4" />
+          <ArrowRight className="w-5 h-5" />
         </button>
       </form>
 
-      {/* Switch to Mobile or Sign Up */}
-      <div className="space-y-2 text-center text-xs border-t border-gray-100 pt-4">
-        <p className="text-gray-500 font-medium">
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-brand-600 font-bold hover:underline">
-            Sign Up
-          </Link>
-        </p>
-
-        <button
-          onClick={() => navigate('/auth/phone')}
-          className="inline-flex items-center gap-1.5 text-xs text-gray-600 hover:text-brand-600 font-semibold pt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded"
-          type="button"
-        >
-          <Smartphone className="w-3.5 h-3.5 text-brand-600" />
-          <span>Or sign in using mobile OTP</span>
-        </button>
+      {/* Footer Switch to Sign Up */}
+      <div className="pb-4 text-center text-xs font-bold text-gray-600">
+        Don't have an account?{' '}
+        <Link to="/signup" className="text-[#53B175] hover:underline">
+          Sign Up
+        </Link>
       </div>
     </div>
   );

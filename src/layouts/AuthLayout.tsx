@@ -3,9 +3,10 @@ import { Outlet } from 'react-router-dom';
 
 export const AuthLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-slate-900 bg-gradient-to-br from-brand-950 via-slate-900 to-emerald-950 flex flex-col justify-center items-center p-0 sm:p-4 md:p-6 overflow-x-hidden">
-      <div className="w-full max-w-md mx-auto min-h-screen sm:min-h-0 flex flex-col justify-center">
-        <main className="w-full flex-1 sm:flex-initial">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-0 sm:p-6 overflow-x-hidden">
+      {/* Figma 414 x 896 px Mobile App Frame Proportions */}
+      <div className="w-full sm:w-[414px] min-h-screen sm:min-h-[896px] sm:h-[896px] bg-white sm:rounded-[40px] shadow-2xl overflow-y-auto overflow-x-hidden border-0 sm:border-[8px] sm:border-slate-800 flex flex-col relative">
+        <main className="flex-1 flex flex-col w-full">
           <Outlet />
         </main>
       </div>
