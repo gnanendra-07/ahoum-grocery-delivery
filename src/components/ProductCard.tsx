@@ -1,4 +1,6 @@
 import React from 'react';
+
+const FALLBACK_IMAGE = 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80';
 import { Link } from 'react-router-dom';
 import { Heart, Plus, Minus, Star } from 'lucide-react';
 import { Product } from '../types';
@@ -24,10 +26,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = tru
   const isOutOfStock = product.stock <= 0;
 
   return (
-    <div className={`bg-white rounded-2xl border border-gray-100/90 shadow-sm hover:shadow transition-all ${compact ? 'p-2.5' : 'p-3'} flex flex-col justify-between relative group`}>
+    <div className={`bg-white rounded-2xl border ${isOutOfStock ? 'border-gray-200/70 opacity-75' : 'border-gray-100/90'} shadow-sm hover:shadow transition-all ${compact ? 'p-2.5' : 'p-3'} flex flex-col justify-between relative group`}>
       {/* Top Bar: Badges & Favorite */}
       <div className="flex items-center justify-between mb-0.5 z-10">
-        {discountPercent > 0 ? (
+        {isOutOfStock ? (
+          <span className="bg-gray-200 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded-md uppercase tracking-wide">
+            Out of Stock
+          </span>
+        ) : discountPercent > 0 ? (
           <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
             {discountPercent}% OFF
           </span>
@@ -53,10 +59,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = tru
       <Link to={`/product/${product.id}`} className="block flex-1">
         <div className={`w-full ${compact ? 'h-20' : 'h-24'} flex items-center justify-center mb-1.5 overflow-hidden rounded-xl bg-gray-50/40`}>
           <img
-            src={product.images[0] || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80'}
+            src={product.images[0] || FALLBACK_IMAGE}
             alt={product.name}
-            className="h-full w-full object-contain p-0.5 group-hover:scale-105 transition-transform duration-300"
+            className={`h-full w-full object-contain p-0.5 transition-transform duration-300 ${isOutOfStock ? 'grayscale-[40%]' : 'group-hover:scale-105'}`}
             loading="lazy"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = FALLBACK_IMAGE; }}
           />
         </div>
 
@@ -92,8 +99,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = tru
         </div>
 
         {isOutOfStock ? (
-          <span className="text-[9px] font-bold text-gray-400 uppercase bg-gray-100 px-1.5 py-0.5 rounded-lg">
-            Sold Out
+          <span className="text-[9px] font-bold text-gray-400 uppercase bg-gray-100 px-1.5 py-0.5 rounded-lg cursor-not-allowed">
+            Unavailable
           </span>
         ) : quantity > 0 ? (
           <div className="flex items-center gap-0.5 bg-emerald-50 border border-emerald-200 rounded-xl px-1.5 py-0.5">

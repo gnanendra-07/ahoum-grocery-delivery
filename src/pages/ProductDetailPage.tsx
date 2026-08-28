@@ -73,6 +73,7 @@ export const ProductDetailPage: React.FC = () => {
   const quantity = getItemQuantity(product.id);
   const favorite = isFavorite(product.id);
   const displayPrice = product.discountPrice ?? product.price;
+  const isOutOfStock = product.stock <= 0;
 
   const handleShare = async () => {
     if (navigator.share) {
@@ -116,8 +117,19 @@ export const ProductDetailPage: React.FC = () => {
         <img
           src={product.images[0]}
           alt={product.name}
-          className="max-h-full max-w-full object-contain"
+          className={`max-h-full max-w-full object-contain ${isOutOfStock ? 'grayscale-[30%] opacity-75' : ''}`}
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src =
+              'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80';
+          }}
         />
+        {isOutOfStock && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="bg-gray-800/60 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">
+              Out of Stock
+            </span>
+          </div>
+        )}
       </div>
 
       {/* 3. Product Title, Weight & Favorite Icon */}
@@ -142,7 +154,7 @@ export const ProductDetailPage: React.FC = () => {
         <div className="flex items-center gap-3">
           <button
             onClick={() => updateQuantity(product.id, Math.max(0, quantity - 1))}
-            disabled={quantity === 0}
+            disabled={quantity === 0 || isOutOfStock}
             className="p-2 text-gray-400 hover:text-[#53B175] disabled:opacity-30 transition-colors focus-visible:outline-none"
             aria-label="Decrease quantity"
             type="button"
@@ -151,18 +163,21 @@ export const ProductDetailPage: React.FC = () => {
           </button>
 
           <div className="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center text-sm font-bold text-gray-900 shadow-sm bg-white">
-            {quantity > 0 ? quantity : 1}
+            {isOutOfStock ? 0 : (quantity > 0 ? quantity : 1)}
           </div>
 
           <button
             onClick={() => {
-              if (quantity === 0) {
-                addItem(product);
-              } else {
-                updateQuantity(product.id, quantity + 1);
+              if (!isOutOfStock) {
+                if (quantity === 0) {
+                  addItem(product);
+                } else {
+                  updateQuantity(product.id, quantity + 1);
+                }
               }
             }}
-            className="p-2 text-[#53B175] hover:text-[#489d67] transition-colors focus-visible:outline-none"
+            disabled={isOutOfStock}
+            className="p-2 text-[#53B175] hover:text-[#489d67] disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus-visible:outline-none"
             aria-label="Increase quantity"
             type="button"
           >
@@ -259,15 +274,25 @@ export const ProductDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 8. Add To Basket Green Button */}
+      {/* 8. Add To Basket Green Button (disabled when out of stock) */}
       <div className="pt-2">
-        <button
-          onClick={() => addItem(product)}
-          className="w-full py-4 bg-[#53B175] hover:bg-[#489d67] active:scale-[0.99] text-white font-bold text-sm rounded-2xl shadow-sm transition-all focus-visible:outline-none flex items-center justify-center gap-2"
-          type="button"
-        >
-          Add To Basket
-        </button>
+        {isOutOfStock ? (
+          <button
+            disabled
+            className="w-full py-4 bg-gray-200 text-gray-400 font-bold text-sm rounded-2xl cursor-not-allowed flex items-center justify-center gap-2"
+            type="button"
+          >
+            Out of Stock
+          </button>
+        ) : (
+          <button
+            onClick={() => addItem(product)}
+            className="w-full py-4 bg-[#53B175] hover:bg-[#489d67] active:scale-[0.99] text-white font-bold text-sm rounded-2xl shadow-sm transition-all focus-visible:outline-none flex items-center justify-center gap-2"
+            type="button"
+          >
+            Add To Basket
+          </button>
+        )}
       </div>
     </div>
   );

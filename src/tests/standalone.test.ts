@@ -110,3 +110,40 @@ test('Cart Persistence: Revalidates deleted items, price updates, and stock limi
   const banana = revalidated.find((i) => i.product.id === 'p1');
   assert.equal(banana?.quantity, 5);
 });
+
+test('Cart Persistence: Out-of-stock products (stock=0) are removed during revalidation', () => {
+  const currentCatalog: TestProduct[] = [
+    { id: 'fresh-chicken', name: 'Fresh Whole Chicken', price: 7.49, stock: 0 }, // was in stock, now OOS
+    { id: 'salmon-fillet', name: 'Salmon Fillet', price: 16.99, stock: 0 },      // was in stock, now OOS
+    { id: 'cashews', name: 'Cashew Nuts', price: 7.49, stock: 40 },              // still in stock
+  ];
+
+  const storedCartItems: TestCartItem[] = [
+    { product: { id: 'fresh-chicken', name: 'Fresh Whole Chicken', price: 8.99, stock: 25 }, quantity: 1 },
+    { product: { id: 'salmon-fillet', name: 'Salmon Fillet', price: 16.99, stock: 15 }, quantity: 2 },
+    { product: { id: 'cashews', name: 'Cashew Nuts', price: 8.99, stock: 40 }, quantity: 3 },
+  ];
+
+  const productMap = new Map<string, TestProduct>(currentCatalog.map((p) => [p.id, p]));
+  const revalidated: TestCartItem[] = [];
+
+  for (const item of storedCartItems) {
+    const latest = productMap.get(item.product.id);
+    if (!latest || latest.stock <= 0) continue; // drop OOS or deleted
+    const clampedQty = Math.min(item.quantity, latest.stock);
+    if (clampedQty > 0) {
+      revalidated.push({ product: latest, quantity: clampedQty });
+    }
+  }
+
+  // OOS products must be removed from cart
+  assert.ok(!revalidated.some((i) => i.product.id === 'fresh-chicken'), 'OOS chicken should be removed');
+  assert.ok(!revalidated.some((i) => i.product.id === 'salmon-fillet'), 'OOS salmon should be removed');
+
+  // In-stock cashews must remain
+  assert.equal(revalidated.length, 1);
+  const cashewItem = revalidated[0];
+  assert.ok(cashewItem !== undefined, 'Cashew item should be present');
+  assert.equal(cashewItem.product.id, 'cashews');
+  assert.equal(cashewItem.quantity, 3);
+});
