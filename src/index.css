@@ -1,11 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   html, body {
-    overflow: hidden;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Mobile / phone-frame: keep the existing overflow-hidden so the frame clips properly */
+  body {
+    overflow: hidden;
+  }
+
+  /* On large desktop viewports the home page breaks out of the device frame,
+     so we allow document-level scrolling. The JS shell sets overflow-auto on
+     its own wrapper, but we also need the html/body to be scrollable. */
+  @media (min-width: 1024px) {
+    html.desktop-home,
+    html.desktop-home body {
+      overflow: auto;
+    }
   }
 }
 
@@ -18,5 +35,14 @@
   .no-scrollbar {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
+  }
+
+  /* Carousel fade-in animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease both;
   }
 }
