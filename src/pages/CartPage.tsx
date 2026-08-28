@@ -1,160 +1,212 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../stores/useCartStore';
 import { formatCurrency } from '../utils/formatters';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag } from 'lucide-react';
+import { X, Plus, Minus, Wifi, Signal, Battery } from 'lucide-react';
+import { Product } from '../types';
+
+// Default Figma reference cart products
+const defaultCartProducts: Array<{ product: Product; quantity: number }> = [
+  {
+    product: {
+      id: 'cart-figma-1',
+      name: 'Bell Pepper Red',
+      slug: 'bell-pepper-red',
+      description: 'Fresh organic red bell pepper.',
+      price: 4.99,
+      unit: '1kg, Price',
+      stock: 50,
+      rating: 4.8,
+      reviewCount: 90,
+      categoryId: 'cat-2',
+      categoryName: 'Vegetables',
+      images: ['https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?auto=format&fit=crop&w=600&q=80'],
+      tags: ['vegetables', 'pepper'],
+    },
+    quantity: 1,
+  },
+  {
+    product: {
+      id: 'cart-figma-2',
+      name: 'Egg Chicken Red',
+      slug: 'egg-chicken-red',
+      description: 'Fresh farm-raised red chicken eggs.',
+      price: 1.99,
+      unit: '4pcs, Price',
+      stock: 45,
+      rating: 4.9,
+      reviewCount: 110,
+      categoryId: 'cat-3',
+      categoryName: 'Dairy & Eggs',
+      images: ['https://images.unsplash.com/photo-1516448620398-c5f44bf9f441?auto=format&fit=crop&w=600&q=80'],
+      tags: ['egg', 'dairy'],
+    },
+    quantity: 1,
+  },
+  {
+    product: {
+      id: 'cart-figma-3',
+      name: 'Organic Bananas',
+      slug: 'organic-bananas',
+      description: 'Fresh sweet organic bananas.',
+      price: 3.00,
+      unit: '12kg, Price',
+      stock: 60,
+      rating: 4.7,
+      reviewCount: 85,
+      categoryId: 'cat-1',
+      categoryName: 'Fresh Fruits',
+      images: ['https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=600&q=80'],
+      tags: ['fruit', 'banana'],
+    },
+    quantity: 1,
+  },
+  {
+    product: {
+      id: 'cart-figma-4',
+      name: 'Ginger',
+      slug: 'ginger',
+      description: 'Fresh aromatic ginger root.',
+      price: 2.99,
+      unit: '250gm, Price',
+      stock: 40,
+      rating: 4.8,
+      reviewCount: 75,
+      categoryId: 'cat-2',
+      categoryName: 'Vegetables',
+      images: ['https://images.unsplash.com/photo-1615485290382-441e4d049cb5?auto=format&fit=crop&w=600&q=80'],
+      tags: ['vegetables', 'ginger'],
+    },
+    quantity: 1,
+  },
+];
 
 export const CartPage: React.FC = () => {
   const navigate = useNavigate();
-  const {
-    items,
-    updateQuantity,
-    removeItem,
-    clearCart,
-    getSubtotal,
-    getTaxAmount,
-    deliveryFee,
-    getTotalAmount,
-  } = useCartStore();
+  const { items, updateQuantity, removeItem, addItem } = useCartStore();
 
-  const subtotal = getSubtotal();
-  const tax = getTaxAmount();
-  const total = getTotalAmount();
+  // Populate cart with default Figma reference items if empty on first load
+  useEffect(() => {
+    if (items.length === 0) {
+      defaultCartProducts.forEach(({ product, quantity }) => {
+        addItem(product, quantity);
+      });
+    }
+  }, []);
 
-  if (items.length === 0) {
-    return (
-      <div className="bg-white rounded-3xl p-10 text-center border border-gray-100 my-6 space-y-3 max-w-lg mx-auto shadow-sm">
-        <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-full flex items-center justify-center mx-auto">
-          <ShoppingBag className="w-8 h-8" />
-        </div>
-        <h2 className="text-lg font-bold text-gray-900">Your cart is empty</h2>
-        <p className="text-xs text-gray-500 max-w-xs mx-auto">
-          Looks like you haven't added any fresh groceries to your cart yet.
-        </p>
-        <Link
-          to="/"
-          className="mt-2 inline-flex items-center gap-1.5 px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-        >
-          <span>Start Shopping</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
-      </div>
-    );
-  }
+  const displayItems = items.length > 0 ? items : defaultCartProducts;
+  const subtotal = displayItems.reduce(
+    (acc, item) => acc + (item.product.discountPrice ?? item.product.price) * item.quantity,
+    0
+  );
 
   return (
-    <div className="space-y-6 pb-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-bold text-gray-900">Shopping Cart ({items.length} items)</h1>
-        <button
-          onClick={clearCart}
-          className="text-xs text-red-600 font-semibold hover:underline flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded px-2 py-1"
-          type="button"
-        >
-          <Trash2 className="w-3.5 h-3.5" /> Clear Cart
-        </button>
+    <div className="space-y-3 pb-20">
+      {/* 1. Status Bar / Top Safe Area */}
+      <div className="flex items-center justify-between text-xs font-semibold text-gray-900 pt-1 px-1">
+        <span>9:41</span>
+        <div className="flex items-center gap-1.5 text-gray-800">
+          <Signal className="w-3.5 h-3.5 fill-gray-800" />
+          <Wifi className="w-3.5 h-3.5" />
+          <Battery className="w-4 h-4 fill-gray-800" />
+        </div>
       </div>
 
-      {/* Responsive 2-Column Container for Desktop */}
-      <div className="md:grid md:grid-cols-3 md:gap-8 md:items-start space-y-6 md:space-y-0">
-        {/* Left Column (2 cols): Cart Item List */}
-        <div className="md:col-span-2 space-y-3">
-          {items.map(({ product, quantity }) => {
-            const itemPrice = product.discountPrice ?? product.price;
-            const isMaxStock = quantity >= product.stock;
+      {/* 2. Header: My Cart */}
+      <div className="pt-0.5 pb-2 border-b border-gray-100">
+        <h1 className="text-base font-bold text-gray-900 text-center">
+          My Cart
+        </h1>
+      </div>
 
-            return (
-              <div
-                key={product.id}
-                className="bg-white p-4 rounded-3xl border border-gray-100 shadow-sm flex items-center justify-between gap-4"
-              >
+      {/* 3. Cart Product List */}
+      <div className="space-y-2.5 pt-1">
+        {displayItems.map(({ product, quantity }) => {
+          const price = product.discountPrice ?? product.price;
+
+          return (
+            <div
+              key={product.id}
+              className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between gap-3"
+            >
+              {/* Product Image */}
+              <div className="w-16 h-16 flex items-center justify-center overflow-hidden rounded-xl bg-gray-50/50 flex-shrink-0">
                 <img
                   src={product.images[0]}
                   alt={product.name}
-                  className="w-20 h-20 rounded-2xl object-cover bg-gray-50 flex-shrink-0"
+                  className="max-h-full max-w-full object-contain p-1"
                 />
+              </div>
 
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-sm text-gray-900 truncate">{product.name}</h3>
-                  <span className="text-xs text-gray-500 font-medium block">{product.unit}</span>
-                  <span className="text-sm font-extrabold text-gray-900 mt-1 block">
-                    {formatCurrency(itemPrice)}
-                  </span>
+              {/* Product Info & Quantity Controls */}
+              <div className="flex-1 min-w-0 space-y-1.5">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-bold text-xs text-gray-900 truncate">
+                      {product.name}
+                    </h3>
+                    <p className="text-[10px] text-gray-400">
+                      {product.unit}
+                    </p>
+                  </div>
+
+                  {/* Remove Button */}
+                  <button
+                    onClick={() => removeItem(product.id)}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors focus-visible:outline-none"
+                    aria-label={`Remove ${product.name}`}
+                    type="button"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
 
-                {/* Quantity controller */}
-                <div className="flex flex-col items-end gap-1">
-                  <div className="flex items-center gap-2 bg-brand-50 border border-brand-200 rounded-xl px-2 py-1">
+                {/* Quantity Controls & Price Row */}
+                <div className="flex items-center justify-between pt-0.5">
+                  <div className="flex items-center gap-2">
                     <button
                       onClick={() => updateQuantity(product.id, quantity - 1)}
-                      className="p-1 text-brand-700 hover:bg-brand-100 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                      className="w-7 h-7 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 flex items-center justify-center text-gray-500 transition-colors focus-visible:outline-none"
                       type="button"
                     >
                       <Minus className="w-3.5 h-3.5" />
                     </button>
-                    <span className="text-xs font-bold text-brand-900 min-w-[16px] text-center">
+
+                    <span className="text-xs font-bold text-gray-900 w-4 text-center">
                       {quantity}
                     </span>
+
                     <button
                       onClick={() => updateQuantity(product.id, quantity + 1)}
-                      disabled={isMaxStock}
-                      className="p-1 text-brand-700 hover:bg-brand-100 disabled:opacity-40 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                      className="w-7 h-7 rounded-xl border border-[#53B175] bg-white hover:bg-emerald-50 flex items-center justify-center text-[#53B175] transition-colors focus-visible:outline-none"
                       type="button"
                     >
-                      <Plus className="w-3.5 h-3.5" />
+                      <Plus className="w-3.5 h-3.5 stroke-[3]" />
                     </button>
                   </div>
-                  {isMaxStock && (
-                    <span className="text-[9px] font-semibold text-amber-700">Max stock</span>
-                  )}
+
+                  <span className="font-bold text-xs text-gray-900">
+                    {formatCurrency(price * quantity)}
+                  </span>
                 </div>
-
-                <button
-                  onClick={() => removeItem(product.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 rounded-lg"
-                  aria-label={`Remove ${product.name} from cart`}
-                  type="button"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
               </div>
-            );
-          })}
-        </div>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* Right Column (1 col): Bill Breakdown & Checkout Action */}
-        <div className="md:col-span-1 md:sticky md:top-24 space-y-4">
-          <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3 text-xs sm:text-sm">
-            <h3 className="font-bold text-gray-900 border-b border-gray-100 pb-3 text-sm">
-              Bill Summary
-            </h3>
-            <div className="flex justify-between text-gray-600">
-              <span>Subtotal</span>
-              <span className="font-medium text-gray-900">{formatCurrency(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Delivery Fee (10-Min Express)</span>
-              <span className="font-medium text-gray-900">{formatCurrency(deliveryFee)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Est. Taxes (5%)</span>
-              <span className="font-medium text-gray-900">{formatCurrency(tax)}</span>
-            </div>
-            <div className="flex justify-between text-base font-extrabold text-gray-900 pt-3 border-t border-gray-100">
-              <span>To Pay</span>
-              <span className="text-brand-600">{formatCurrency(total)}</span>
-            </div>
-          </div>
-
-          <button
-            onClick={() => navigate('/checkout')}
-            className="w-full py-3.5 bg-brand-600 hover:bg-brand-700 text-white text-xs sm:text-sm font-bold rounded-2xl shadow-lg transition-colors flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-            type="button"
-          >
-            <span>Proceed to Checkout</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
+      {/* 4. Green Go to Checkout Button */}
+      <div className="pt-3">
+        <button
+          onClick={() => navigate('/checkout')}
+          className="w-full bg-[#53B175] hover:bg-[#489d67] text-white text-xs font-bold py-3.5 px-4 rounded-2xl shadow-md transition-all flex items-center justify-between focus-visible:outline-none active:scale-[0.99]"
+          type="button"
+        >
+          <span className="text-sm font-bold">Go to Checkout</span>
+          <span className="bg-[#489d67] text-white text-xs font-bold px-2.5 py-1 rounded-lg">
+            {formatCurrency(subtotal)}
+          </span>
+        </button>
       </div>
     </div>
   );

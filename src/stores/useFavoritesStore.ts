@@ -12,7 +12,9 @@ const FAVORITES_STORAGE_KEY = 'ahoum_favorite_product_ids';
 const loadFavoritesFromStorage = (): string[] => {
   try {
     const data = localStorage.getItem(FAVORITES_STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    if (!data) return [];
+    const parsed = JSON.parse(data);
+    return Array.isArray(parsed) ? parsed : [];
   } catch (err) {
     console.error('Failed to load favorites from storage', err);
     return [];

@@ -8,9 +8,10 @@ import { formatCurrency, calculateDiscountPercentage } from '../utils/formatters
 
 interface ProductCardProps {
   product: Product;
+  compact?: boolean;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+export const ProductCard: React.FC<ProductCardProps> = ({ product, compact = true }) => {
   const { addItem, updateQuantity, getItemQuantity } = useCartStore();
   const { toggleFavorite, isFavorite } = useFavoritesStore();
 
@@ -21,24 +22,18 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     : 0;
 
   const isOutOfStock = product.stock <= 0;
-  const isMaxStockReached = quantity >= product.stock;
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all overflow-hidden flex flex-col justify-between group relative">
+    <div className={`bg-white rounded-2xl border border-gray-100/90 shadow-sm hover:shadow transition-all ${compact ? 'p-2.5' : 'p-3'} flex flex-col justify-between relative group`}>
       {/* Top Bar: Badges & Favorite */}
-      <div className="absolute top-2 left-2 right-2 z-10 flex items-center justify-between">
-        <div className="flex flex-col gap-1 items-start">
-          {discountPercent > 0 && (
-            <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm">
-              {discountPercent}% OFF
-            </span>
-          )}
-          {product.isOrganic && (
-            <span className="bg-emerald-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm">
-              Organic
-            </span>
-          )}
-        </div>
+      <div className="flex items-center justify-between mb-0.5 z-10">
+        {discountPercent > 0 ? (
+          <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-md">
+            {discountPercent}% OFF
+          </span>
+        ) : (
+          <span />
+        )}
 
         <button
           onClick={(e) => {
@@ -46,108 +41,86 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             e.stopPropagation();
             toggleFavorite(product.id);
           }}
-          className="p-1.5 bg-white/90 backdrop-blur-sm rounded-full text-gray-400 hover:text-red-500 shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+          className="p-0.5 text-gray-400 hover:text-red-500 transition-colors focus-visible:outline-none"
           aria-label={favorite ? `Remove ${product.name} from favorites` : `Add ${product.name} to favorites`}
           type="button"
         >
-          <Heart className={`w-4 h-4 ${favorite ? 'fill-red-500 text-red-500' : ''}`} />
+          <Heart className={`w-3.5 h-3.5 ${favorite ? 'fill-red-500 text-red-500' : ''}`} />
         </button>
       </div>
 
-      {/* Image & Product Link */}
-      <Link
-        to={`/product/${product.id}`}
-        className="block p-3 pt-8 flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-xl"
-      >
-        <div className="aspect-square w-full rounded-xl overflow-hidden bg-gray-50 flex items-center justify-center mb-2 relative">
+      {/* Image & Product Info */}
+      <Link to={`/product/${product.id}`} className="block flex-1">
+        <div className={`w-full ${compact ? 'h-20' : 'h-24'} flex items-center justify-center mb-1.5 overflow-hidden rounded-xl bg-gray-50/40`}>
           <img
             src={product.images[0] || 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80'}
             alt={product.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="h-full w-full object-contain p-0.5 group-hover:scale-105 transition-transform duration-300"
             loading="lazy"
           />
-          {isOutOfStock && (
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-[1px] flex items-center justify-center">
-              <span className="text-white text-[10px] font-bold uppercase tracking-wider bg-red-600 px-2 py-0.5 rounded">
-                Out of Stock
-              </span>
-            </div>
-          )}
         </div>
 
-        <div className="flex items-center gap-1 text-xs text-amber-500 font-medium mb-1">
-          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+        <div className="flex items-center gap-1 text-[9px] text-amber-500 font-medium mb-0.5">
+          <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
           <span>{product.rating}</span>
-          <span className="text-gray-400">({product.reviewCount})</span>
         </div>
 
-        <h3 className="font-semibold text-sm text-gray-900 line-clamp-1 group-hover:text-brand-600 transition-colors">
+        <h3 className="font-bold text-xs text-gray-900 line-clamp-1 leading-snug">
           {product.name}
         </h3>
 
-        <p className="text-xs text-gray-500 mt-0.5">{product.unit}</p>
+        <p className="text-[10px] text-gray-400 mt-0.5">{product.unit}</p>
       </Link>
 
-      {/* Footer: Price & Add to Cart Controls */}
-      <div className="p-3 pt-0 flex items-center justify-between gap-2 mt-auto">
+      {/* Footer: Price & Add Control */}
+      <div className="flex items-center justify-between mt-1.5 pt-0.5">
         <div className="flex flex-col">
           {product.discountPrice ? (
             <>
-              <span className="font-bold text-base text-gray-900">
+              <span className="font-bold text-xs text-gray-900">
                 {formatCurrency(product.discountPrice)}
               </span>
-              <span className="text-xs text-gray-400 line-through">
+              <span className="text-[9px] text-gray-400 line-through">
                 {formatCurrency(product.price)}
               </span>
             </>
           ) : (
-            <span className="font-bold text-base text-gray-900">
+            <span className="font-bold text-xs text-gray-900">
               {formatCurrency(product.price)}
             </span>
           )}
         </div>
 
-        {/* Quantity Controller */}
         {isOutOfStock ? (
-          <span className="text-[10px] font-bold text-gray-400 uppercase bg-gray-100 px-2 py-1 rounded-lg">
+          <span className="text-[9px] font-bold text-gray-400 uppercase bg-gray-100 px-1.5 py-0.5 rounded-lg">
             Sold Out
           </span>
         ) : quantity > 0 ? (
-          <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-1.5 bg-brand-50 border border-brand-200 rounded-xl px-1.5 py-1">
-              <button
-                onClick={() => updateQuantity(product.id, quantity - 1)}
-                className="p-1 text-brand-700 hover:bg-brand-100 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                aria-label={`Decrease ${product.name} quantity`}
-                type="button"
-              >
-                <Minus className="w-3.5 h-3.5" />
-              </button>
-              <span className="text-xs font-bold text-brand-900 min-w-[16px] text-center">
-                {quantity}
-              </span>
-              <button
-                onClick={() => updateQuantity(product.id, quantity + 1)}
-                disabled={isMaxStockReached}
-                className="p-1 text-brand-700 hover:bg-brand-100 disabled:opacity-40 disabled:hover:bg-transparent rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-                aria-label={`Increase ${product.name} quantity`}
-                type="button"
-              >
-                <Plus className="w-3.5 h-3.5" />
-              </button>
-            </div>
-            {isMaxStockReached && (
-              <span className="text-[9px] font-semibold text-amber-700">Max stock</span>
-            )}
+          <div className="flex items-center gap-0.5 bg-emerald-50 border border-emerald-200 rounded-xl px-1.5 py-0.5">
+            <button
+              onClick={() => updateQuantity(product.id, quantity - 1)}
+              className="p-0.5 text-[#53B175]"
+              type="button"
+            >
+              <Minus className="w-3 h-3" />
+            </button>
+            <span className="text-xs font-bold text-gray-900 px-0.5">{quantity}</span>
+            <button
+              onClick={() => updateQuantity(product.id, quantity + 1)}
+              className="p-0.5 text-[#53B175]"
+              type="button"
+            >
+              <Plus className="w-3 h-3" />
+            </button>
           </div>
         ) : (
           <button
             onClick={() => addItem(product)}
-            className="flex items-center gap-1 px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-semibold rounded-xl shadow-sm hover:shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-all"
+            className="w-7 h-7 rounded-xl bg-[#53B175] hover:bg-[#489d67] text-white flex items-center justify-center shadow-sm transition-all focus-visible:outline-none active:scale-95"
             type="button"
+            aria-label={`Add ${product.name} to cart`}
           >
-            <Plus className="w-3.5 h-3.5" />
-            <span>ADD</span>
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
           </button>
         )}
       </div>

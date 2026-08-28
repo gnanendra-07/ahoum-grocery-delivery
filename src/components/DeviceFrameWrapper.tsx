@@ -1,34 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 
 interface DeviceFrameWrapperProps {
   children: React.ReactNode;
   bgColor?: string;
 }
 
+const getDesktopScale = (): number => {
+  if (typeof window === 'undefined') return 0.82;
+  // Reserve vertical/horizontal margins so complete phone frame fits with visible dark space top & bottom
+  const paddingY = 48; // 24px top and bottom space min
+  const paddingX = 32; // 16px left and right space min
+  const availableH = window.innerHeight - paddingY;
+  const availableW = window.innerWidth - paddingX;
+  const scaleH = availableH / 896;
+  const scaleW = availableW / 414;
+  // Target max scale 0.82 (~339.5px visual width), dynamically scaled down if viewport height/width is smaller
+  return Math.max(0.35, Math.min(0.82, Math.min(scaleW, scaleH)));
+};
+
 export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
   children,
   bgColor = 'bg-gray-50',
 }) => {
-  const [scale, setScale] = useState<number>(0.85);
-  const [isDesktop, setIsDesktop] = useState<boolean>(false);
+  const [scale, setScale] = useState<number>(getDesktopScale);
+  const [isDesktop, setIsDesktop] = useState<boolean>(
+    () => typeof window !== 'undefined' && window.innerWidth >= 640
+  );
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+
+  // Reset internal scroll container to top whenever route changes
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   useEffect(() => {
     const handleResize = () => {
       const desktop = window.innerWidth >= 640;
       setIsDesktop(desktop);
       if (desktop) {
-        // Reserve padding so phone mockup fits completely within desktop window
-        const padding = 32;
-        const availableW = window.innerWidth - padding;
-        const availableH = window.innerHeight - padding;
-        // Total outer phone frame dimensions including 8px borders
-        const totalW = 430;
-        const totalH = 912;
-        const scaleW = availableW / totalW;
-        const scaleH = availableH / totalH;
-        // Cap desktop phone preview scale at 0.85 max so it fits comfortably on any screen without overflow
-        const fitScale = Math.min(0.85, Math.min(scaleW, scaleH));
-        setScale(Math.max(0.35, fitScale));
+        setScale(getDesktopScale());
       } else {
         setScale(1);
       }
@@ -53,7 +69,7 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
   const scaledHeight = 896 * scale;
 
   return (
-    <div className="fixed inset-0 w-screen h-screen bg-slate-950 flex items-center justify-center overflow-hidden p-0 z-50">
+    <div className="fixed inset-0 w-full h-full bg-slate-950 flex items-center justify-center overflow-hidden p-0 z-50">
       {/* Wrapper box matching scaled footprint */}
       <div
         style={{
@@ -64,6 +80,7 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
       >
         {/* Fixed 414 x 896 CSS px Source Phone Frame */}
         <div
+          ref={scrollContainerRef}
           style={{
             transform: `scale(${scale})`,
             transformOrigin: 'center center',
@@ -76,3 +93,4 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
     </div>
   );
 };
+

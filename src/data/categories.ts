@@ -44,7 +44,7 @@ export const mockCategories: Category[] = [
     iconName: 'Coffee',
     description: 'Juices, cold brews, teas and mineral waters',
     image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80',
-    productCount: 14,
+    productCount: 6,
   },
   {
     id: 'cat-6',

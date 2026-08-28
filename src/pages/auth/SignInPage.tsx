@@ -40,66 +40,72 @@ const FlagIcon: React.FC = () => (
   </div>
 );
 
-export const AuthLandingPage: React.FC = () => {
+export const SignInPage: React.FC = () => {
   const navigate = useNavigate();
-  const loginMockUser = useAuthStore((state) => state.loginMockUser);
+  const setTempPhone = useAuthStore((state) => state.setTempPhone);
 
-  const handleSocialLogin = () => {
-    loginMockUser();
-    navigate('/home');
+  const handlePhoneClick = () => {
+    setTempPhone('+880 1712345678');
+    navigate('/auth/phone');
+  };
+
+  const handleSocialClick = () => {
+    navigate('/auth/phone');
   };
 
   return (
     <div className="bg-white h-full flex flex-col justify-between py-3 px-6 select-none relative overflow-hidden text-gray-900">
-      <div className="space-y-4 w-full max-w-[364px] mx-auto">
-        {/* 1. Status Bar */}
-        <div className="flex items-center justify-between text-xs font-semibold text-gray-900 pt-1">
-          <span>9:41</span>
-          <div className="flex items-center gap-1.5 text-gray-800">
-            <Signal className="w-3.5 h-3.5 fill-gray-800" />
-            <Wifi className="w-3.5 h-3.5" />
-            <Battery className="w-4 h-4 fill-gray-800" />
+      <div className="space-y-4 w-full max-w-[364px] mx-auto flex-1 flex flex-col justify-between">
+        <div className="space-y-4">
+          {/* 1. Status Bar */}
+          <div className="flex items-center justify-between text-xs font-semibold text-gray-900 pt-1">
+            <span>9:41</span>
+            <div className="flex items-center gap-1.5 text-gray-800">
+              <Signal className="w-3.5 h-3.5 fill-gray-800" />
+              <Wifi className="w-3.5 h-3.5" />
+              <Battery className="w-4 h-4 fill-gray-800" />
+            </div>
+          </div>
+
+          {/* 2. Top Grocery Hero Image */}
+          <div className="w-full h-56 rounded-3xl overflow-hidden relative bg-gray-50 shadow-sm">
+            <img
+              src={SIGNIN_HERO_IMAGE}
+              alt="Fresh Groceries"
+              className="w-full h-full object-cover object-center"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-80" />
+          </div>
+
+          {/* 3. Main Heading */}
+          <div className="pt-1">
+            <h1 className="text-2xl font-bold text-gray-900 leading-tight tracking-tight">
+              Get your groceries<br />with nectar
+            </h1>
+          </div>
+
+          {/* 4. Mobile Country Code Row */}
+          <div
+            onClick={handlePhoneClick}
+            className="pt-2 pb-3 border-b border-gray-200 cursor-pointer flex items-center gap-3 hover:border-[#53B175] transition-colors"
+          >
+            <FlagIcon />
+            <span className="text-sm font-semibold text-gray-900">+880</span>
+          </div>
+
+          {/* 5. Social Connect Divider Text */}
+          <div className="pt-4 text-center">
+            <span className="text-xs font-semibold text-gray-400">
+              Or connect with social media
+            </span>
           </div>
         </div>
 
-        {/* 2. Top Grocery Hero Image */}
-        <div className="w-full h-56 rounded-3xl overflow-hidden relative bg-gray-50 shadow-sm">
-          <img
-            src={SIGNIN_HERO_IMAGE}
-            alt="Fresh Groceries"
-            className="w-full h-full object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent opacity-80" />
-        </div>
-
-        {/* 3. Main Heading */}
-        <div className="pt-1">
-          <h1 className="text-2xl font-bold text-gray-900 leading-tight tracking-tight">
-            Get your groceries<br />with nectar
-          </h1>
-        </div>
-
-        {/* 4. Phone Input Selector Row */}
-        <div
-          onClick={() => navigate('/auth/phone')}
-          className="pt-2 pb-3 border-b border-gray-200 cursor-pointer flex items-center gap-3 hover:border-[#53B175] transition-colors"
-        >
-          <FlagIcon />
-          <span className="text-sm font-semibold text-gray-900">+880</span>
-        </div>
-
-        {/* 5. Social Connect Divider Text */}
-        <div className="pt-4 text-center">
-          <span className="text-xs font-semibold text-gray-400">
-            Or connect with social media
-          </span>
-        </div>
-
         {/* 6. Social Login Buttons Stack */}
-        <div className="space-y-3 pt-2">
+        <div className="space-y-3 pt-2 pb-4">
           {/* Google Button */}
           <button
-            onClick={handleSocialLogin}
+            onClick={handleSocialClick}
             className="w-full h-13 py-3.5 bg-[#5383EC] hover:bg-[#4672cf] active:scale-[0.99] text-white text-xs font-bold rounded-2xl shadow-sm transition-all flex items-center justify-center gap-3 focus-visible:outline-none relative px-4"
             type="button"
           >
@@ -111,7 +117,7 @@ export const AuthLandingPage: React.FC = () => {
 
           {/* Facebook Button */}
           <button
-            onClick={handleSocialLogin}
+            onClick={handleSocialClick}
             className="w-full h-13 py-3.5 bg-[#4A66AC] hover:bg-[#3f5793] active:scale-[0.99] text-white text-xs font-bold rounded-2xl shadow-sm transition-all flex items-center justify-center gap-3 focus-visible:outline-none relative px-4"
             type="button"
           >
@@ -124,7 +130,7 @@ export const AuthLandingPage: React.FC = () => {
       </div>
 
       {/* 7. Bottom iOS Home Indicator */}
-      <div className="w-full pb-2 max-w-[364px] mx-auto flex justify-center">
+      <div className="w-full pb-1 max-w-[364px] mx-auto flex justify-center z-10">
         <div className="w-32 h-1 bg-gray-300 rounded-full" />
       </div>
     </div>

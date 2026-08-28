@@ -5,11 +5,10 @@ import { mockApi } from '../services/mockApi';
 import { ProductCard } from '../components/ProductCard';
 import { SkeletonGrid } from '../components/SkeletonLoader';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { Sparkles, ArrowRight, Zap, PackageX } from 'lucide-react';
 
 export const HomePage: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
-  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,11 +19,11 @@ export const HomePage: React.FC = () => {
     try {
       const [catRes, prodRes] = await Promise.all([
         mockApi.getCategories(),
-        mockApi.getProducts({ sortBy: 'popular', limit: 10 }),
+        mockApi.getProducts({ limit: 20 }),
       ]);
 
       setCategories(catRes.data);
-      setPopularProducts(prodRes.data);
+      setProducts(prodRes.data);
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -40,88 +39,111 @@ export const HomePage: React.FC = () => {
     fetchData();
   }, []);
 
+  // Filter products for Figma sections
+  const exclusiveOffers = products.filter((p) => p.discountPrice !== undefined && p.discountPrice < p.price).slice(0, 2);
+  const bestSelling = products.filter((p) => p.isPopular).slice(0, 2);
+  const groceriesProducts = products.slice(2, 4);
+
   return (
-    <div className="space-y-8">
-      {/* Hero Banner */}
-      <div className="rounded-3xl bg-gradient-to-br from-brand-600 to-brand-800 p-6 sm:p-8 text-white shadow-lg relative overflow-hidden">
-        <div className="absolute top-0 right-0 -mr-12 -mt-12 w-64 h-64 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-        <div className="flex items-center gap-1.5 text-brand-200 text-xs font-semibold uppercase tracking-wider mb-2">
-          <Zap className="w-4 h-4 text-amber-300 fill-amber-300" />
-          <span>Express 10-Min Delivery Promise</span>
+    <div className="space-y-5 pb-4">
+      {/* 1. Hero Banner Image */}
+      <div className="relative rounded-2xl overflow-hidden shadow-sm h-32 flex items-center p-5 bg-emerald-50">
+        <img
+          src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80"
+          alt="Fresh Vegetables Banner"
+          className="absolute inset-0 w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-emerald-950/80 via-emerald-900/60 to-transparent" />
+        <div className="relative z-10 text-white max-w-[210px]">
+          <h2 className="text-lg font-bold leading-tight drop-shadow-sm">Fresh Vegetables</h2>
+          <p className="text-[11px] text-emerald-200 font-medium mt-0.5">Get Up To 40% OFF</p>
         </div>
-        <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight max-w-lg">
-          Fresh Groceries Delivered To Your Doorstep
-        </h1>
-        <p className="text-xs sm:text-sm text-brand-100 mt-2 max-w-md">
-          Farm-fresh fruits, organic vegetables, dairy & daily bakery staples delivered in minutes.
-        </p>
-        <Link
-          to="/category/fresh-fruits"
-          className="mt-5 inline-flex items-center gap-2 px-5 py-2.5 bg-white text-brand-800 text-xs sm:text-sm font-bold rounded-xl shadow hover:bg-brand-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white transition-all"
-        >
-          <span>Shop Fresh Now</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
       </div>
 
-      {/* Categories Grid */}
+      {/* 2. Exclusive Offer Section */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-bold text-gray-900">Explore Categories</h2>
-          <span className="text-xs text-gray-500 font-medium">{categories.length} Categories</span>
+        <div className="flex items-center justify-between mb-2.5">
+          <h2 className="text-base font-bold text-gray-900">Exclusive Offer</h2>
+          <Link to="/category/fresh-fruits" className="text-xs font-semibold text-[#53B175] hover:underline">
+            See all
+          </Link>
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 md:gap-4 animate-pulse">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-white p-3 rounded-2xl border border-gray-100 h-28 bg-gray-100" />
-            ))}
-          </div>
+          <SkeletonGrid count={2} />
+        ) : error ? (
+          <ErrorMessage title="Failed to load items" message={error} onRetry={fetchData} />
         ) : (
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 md:gap-4">
-            {categories.map((cat) => (
-              <Link
-                key={cat.id}
-                to={`/category/${cat.slug}`}
-                className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:border-brand-300 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 transition-all flex flex-col items-center text-center group"
-              >
-                <div className="w-12 h-12 rounded-full bg-brand-50 flex items-center justify-center mb-2 group-hover:scale-105 transition-transform overflow-hidden">
-                  <img
-                    src={cat.image}
-                    alt={cat.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <span className="text-[11px] sm:text-xs font-semibold text-gray-800 line-clamp-1 group-hover:text-brand-600">
-                  {cat.name}
-                </span>
-              </Link>
+          <div className="grid grid-cols-2 gap-3.5">
+            {exclusiveOffers.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
       </section>
 
-      {/* Popular Products */}
+      {/* 3. Best Selling Section */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base sm:text-lg font-bold text-gray-900 flex items-center gap-1.5">
-            <Sparkles className="w-4 h-4 text-amber-500 fill-amber-500" />
-            <span>Popular Right Now</span>
-          </h2>
+        <div className="flex items-center justify-between mb-2.5">
+          <h2 className="text-base font-bold text-gray-900">Best Selling</h2>
+          <Link to="/category/fresh-fruits" className="text-xs font-semibold text-[#53B175] hover:underline">
+            See all
+          </Link>
         </div>
 
         {loading ? (
-          <SkeletonGrid count={5} />
+          <SkeletonGrid count={2} />
         ) : error ? (
           <ErrorMessage title="Failed to load items" message={error} onRetry={fetchData} />
-        ) : popularProducts.length === 0 ? (
-          <div className="bg-white rounded-2xl p-8 text-center border border-gray-100 my-4">
-            <PackageX className="w-10 h-10 text-gray-300 mx-auto mb-2" />
-            <h3 className="text-sm font-bold text-gray-800">No popular products found</h3>
-          </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
-            {popularProducts.map((product) => (
+          <div className="grid grid-cols-2 gap-3.5">
+            {bestSelling.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* 4. Groceries Section */}
+      <section>
+        <div className="flex items-center justify-between mb-2.5">
+          <h2 className="text-base font-bold text-gray-900">Groceries</h2>
+          <Link to="/category/fresh-fruits" className="text-xs font-semibold text-[#53B175] hover:underline">
+            See all
+          </Link>
+        </div>
+
+        {/* Category Cards/Chips Horizontal Carousel */}
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none mb-3">
+          {categories.slice(0, 4).map((cat, idx) => {
+            const bgStyles = [
+              'bg-orange-50/80 border-orange-100/80 text-orange-900',
+              'bg-emerald-50/80 border-emerald-100/80 text-emerald-900',
+              'bg-blue-50/80 border-blue-100/80 text-blue-900',
+              'bg-amber-50/80 border-amber-100/80 text-amber-900',
+            ];
+            const styleClass = bgStyles[idx % bgStyles.length];
+            return (
+              <Link
+                key={cat.id}
+                to={`/category/${cat.slug}`}
+                className={`flex items-center gap-2.5 px-3.5 py-2.5 rounded-2xl border ${styleClass} min-w-[140px] flex-shrink-0 hover:shadow-sm transition-all`}
+              >
+                <img src={cat.image} alt={cat.name} className="w-8 h-8 object-cover rounded-xl flex-shrink-0" />
+                <span className="text-xs font-bold line-clamp-1">{cat.name}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Groceries Products (2 Columns) */}
+        {loading ? (
+          <SkeletonGrid count={2} />
+        ) : error ? (
+          <ErrorMessage title="Failed to load items" message={error} onRetry={fetchData} />
+        ) : (
+          <div className="grid grid-cols-2 gap-3.5">
+            {groceriesProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

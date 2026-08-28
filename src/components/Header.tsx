@@ -1,182 +1,44 @@
 import React from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { ShoppingBag, MapPin, Search, AlertTriangle, ShieldCheck, Heart, Home, LayoutGrid, User as UserIcon, LogOut } from 'lucide-react';
-import { useCartStore } from '../stores/useCartStore';
-import { useFavoritesStore } from '../stores/useFavoritesStore';
+import { useNavigate } from 'react-router-dom';
+import { MapPin, Search } from 'lucide-react';
 import { useAuthStore } from '../stores/useAuthStore';
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
-  const totalItems = useCartStore((state) => state.getTotalItemsCount());
-  const favoriteCount = useFavoritesStore((state) => state.favoriteIds.length);
-  const { user, isAuthenticated, activeAddress, isSimulatingFailures, toggleSimulateFailures, logout } = useAuthStore();
+  const { activeAddress } = useAuthStore();
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm">
-      {/* Simulation Banner */}
-      {isSimulatingFailures && (
-        <div className="bg-amber-500 text-white text-xs font-semibold px-4 py-1 flex items-center justify-between">
-          <span className="flex items-center gap-1.5 max-w-7xl mx-auto w-full">
-            <AlertTriangle className="w-3.5 h-3.5" />
-            API Failure Simulation Enabled (30% random error rate)
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100/80 px-4 pt-3 pb-2.5 space-y-2.5 flex-shrink-0">
+      {/* Top: Brand Logo & Location */}
+      <div className="flex flex-col items-center justify-center">
+        {/* Brand Logo / Icon */}
+        <div className="flex items-center justify-center gap-1 mb-1">
+          <svg className="w-6 h-6 text-[#53B175]" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z" />
+          </svg>
+          <span className="text-xl font-black text-gray-900 tracking-tight">
+            Ahoum
           </span>
-          <button
-            onClick={toggleSimulateFailures}
-            className="underline hover:text-amber-100 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
-            type="button"
-          >
-            Disable
-          </button>
-        </div>
-      )}
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-        {/* Left: Brand & Address */}
-        <div className="flex items-center gap-4">
-          <Link
-            to="/"
-            className="flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] rounded-lg p-0.5"
-          >
-            <span className="text-2xl font-black bg-gradient-to-r from-[#53B175] to-emerald-600 bg-clip-text text-transparent">
-              Ahoum
-            </span>
-            <span className="text-[10px] font-bold px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full uppercase tracking-wider">
-              10 Min
-            </span>
-          </Link>
-
-          {/* Location Chip */}
-          <button
-            onClick={() => navigate('/auth/location')}
-            className="flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/60 max-w-[240px] truncate transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
-            title="Change Delivery Location"
-            type="button"
-          >
-            <MapPin className="w-3.5 h-3.5 text-[#53B175] flex-shrink-0" />
-            <span className="font-medium text-gray-700 truncate">
-              {activeAddress ? `${activeAddress.label} • ${activeAddress.street}` : 'Select Location'}
-            </span>
-          </button>
         </div>
 
-        {/* Center: Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Desktop navigation">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] ${
-                isActive ? 'bg-emerald-50 text-[#53B175]' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`
-            }
-          >
-            <Home className="w-4 h-4" />
-            <span>Home</span>
-          </NavLink>
+        {/* Location selector */}
+        <button
+          onClick={() => navigate('/auth/location')}
+          className="flex items-center gap-1 text-xs font-bold text-gray-700 hover:text-[#53B175] transition-colors"
+          type="button"
+        >
+          <MapPin className="w-3.5 h-3.5 text-[#53B175] fill-[#53B175]/20 flex-shrink-0" />
+          <span>{activeAddress ? `${activeAddress.label}, ${activeAddress.street}` : 'Dhaka, Banani'}</span>
+        </button>
+      </div>
 
-          <NavLink
-            to="/category/fresh-fruits"
-            className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] ${
-                isActive ? 'bg-emerald-50 text-[#53B175]' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`
-            }
-          >
-            <LayoutGrid className="w-4 h-4" />
-            <span>Categories</span>
-          </NavLink>
-
-          <NavLink
-            to="/favorites"
-            className={({ isActive }) =>
-              `relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] ${
-                isActive ? 'bg-emerald-50 text-[#53B175]' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`
-            }
-          >
-            <Heart className="w-4 h-4" />
-            <span>Saved</span>
-            {favoriteCount > 0 && (
-              <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full">
-                {favoriteCount}
-              </span>
-            )}
-          </NavLink>
-        </nav>
-
-        {/* Right: Search, Dev Toggle, User Auth & Cart */}
-        <div className="flex items-center gap-2">
-          {/* Quick Search */}
-          <button
-            onClick={() => navigate('/search')}
-            className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-gray-500 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
-            aria-label="Search products"
-            type="button"
-          >
-            <Search className="w-4 h-4 text-gray-400" />
-            <span className="hidden sm:inline text-gray-400">Search groceries...</span>
-          </button>
-
-          {/* User Auth Action Chip */}
-          {isAuthenticated && user ? (
-            <div className="hidden sm:flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1 text-xs">
-              <UserIcon className="w-3.5 h-3.5 text-[#53B175]" />
-              <span className="font-bold text-gray-800 max-w-[90px] truncate">{user.name.split(' ')[0]}</span>
-              <button
-                onClick={() => {
-                  logout();
-                  navigate('/welcome');
-                }}
-                title="Log Out"
-                className="text-gray-400 hover:text-red-600 ml-1 p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-                type="button"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          ) : (
-            <Link
-              to="/welcome"
-              className="hidden sm:flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
-            >
-              <UserIcon className="w-3.5 h-3.5" />
-              <span>Sign In</span>
-            </Link>
-          )}
-
-          {/* Dev Failure Toggle */}
-          <button
-            onClick={toggleSimulateFailures}
-            title={isSimulatingFailures ? 'Disable Network Failures' : 'Enable Network Failures'}
-            className={`p-2 rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] ${
-              isSimulatingFailures
-                ? 'bg-amber-50 text-amber-600 border-amber-200'
-                : 'bg-gray-50 text-gray-400 border-gray-200 hover:text-gray-600'
-            }`}
-            type="button"
-            aria-label={isSimulatingFailures ? 'Disable Network Failures' : 'Enable Network Failures'}
-          >
-            {isSimulatingFailures ? (
-              <AlertTriangle className="w-4 h-4" />
-            ) : (
-              <ShieldCheck className="w-4 h-4" />
-            )}
-          </button>
-
-          {/* Cart Icon Link */}
-          <Link
-            to="/cart"
-            className="relative flex items-center gap-1.5 px-3 py-1.5 bg-[#53B175] hover:bg-[#489d67] text-white text-xs font-bold rounded-xl shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
-            aria-label={`Shopping cart with ${totalItems} items`}
-          >
-            <ShoppingBag className="w-4 h-4" />
-            <span className="hidden sm:inline">Cart</span>
-            {totalItems > 0 && (
-              <span className="bg-white text-[#53B175] text-[10px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center">
-                {totalItems > 99 ? '99+' : totalItems}
-              </span>
-            )}
-          </Link>
-        </div>
+      {/* Search Store Bar */}
+      <div
+        onClick={() => navigate('/search')}
+        className="flex items-center bg-gray-100/90 hover:bg-gray-150 rounded-2xl px-4 py-2.5 cursor-pointer text-gray-400 text-xs font-medium transition-colors border border-transparent hover:border-gray-200"
+      >
+        <Search className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
+        <span className="text-gray-400 font-medium">Search Store</span>
       </div>
     </header>
   );

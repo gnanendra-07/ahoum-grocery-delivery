@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Home, LayoutGrid, Search, Heart, ShoppingBag } from 'lucide-react';
+import { Store, Search, ShoppingCart, Heart, User } from 'lucide-react';
 import { useCartStore } from '../stores/useCartStore';
 import { useFavoritesStore } from '../stores/useFavoritesStore';
 
@@ -9,16 +9,16 @@ export const BottomNav: React.FC = () => {
   const favoriteCount = useFavoritesStore((state) => state.favoriteIds.length);
 
   const navItems = [
-    { to: '/', label: 'Home', icon: Home },
-    { to: '/category/fresh-fruits', label: 'Categories', icon: LayoutGrid },
-    { to: '/search', label: 'Search', icon: Search },
-    { to: '/favorites', label: 'Saved', icon: Heart, badge: favoriteCount },
-    { to: '/cart', label: 'Cart', icon: ShoppingBag, badge: totalCartItems },
+    { to: '/home', label: 'Shop', icon: Store },
+    { to: '/explore', label: 'Explore', icon: Search },
+    { to: '/cart', label: 'Cart', icon: ShoppingCart, badge: totalCartItems },
+    { to: '/favorites', label: 'Favourite', icon: Heart, badge: favoriteCount },
+    { to: '/account', label: 'Account', icon: User },
   ];
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200/80 py-1.5 px-2 md:hidden"
+      className="sticky bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200/80 py-2 px-2 flex-shrink-0"
       aria-label="Main navigation"
     >
       <div className="max-w-md mx-auto flex items-center justify-between">
@@ -29,7 +29,7 @@ export const BottomNav: React.FC = () => {
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
-                `relative flex flex-col items-center gap-0.5 py-1 px-2.5 rounded-lg text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] ${
+                `relative flex flex-col items-center gap-0.5 py-1 px-2 rounded-lg text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] ${
                   isActive
                     ? 'text-[#53B175] font-extrabold'
                     : 'text-gray-500 hover:text-gray-900'

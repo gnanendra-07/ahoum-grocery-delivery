@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, RefreshCw, Wifi, Signal, Battery } from 'lucide-react';
 import { useAuthStore } from '../../stores/useAuthStore';
 
-export const OtpVerificationPage: React.FC = () => {
+export const VerificationPage: React.FC = () => {
   const navigate = useNavigate();
   const { tempPhone, verifyOtpAndLogin } = useAuthStore();
 
@@ -26,7 +26,7 @@ export const OtpVerificationPage: React.FC = () => {
   }, [resendTimer]);
 
   const handleChange = (index: number, value: string) => {
-    const char = value.slice(-1);
+    const char = value.replace(/\D/g, '').slice(-1);
     const newOtp = [...otp];
     newOtp[index] = char;
     setOtp(newOtp);
@@ -55,10 +55,20 @@ export const OtpVerificationPage: React.FC = () => {
 
     const success = verifyOtpAndLogin(fullOtp);
     if (success) {
-      // Upon successful OTP verification, navigate to /auth/location
+      // Upon successful 4-digit OTP verification, navigate to Select Location screen
       navigate('/auth/location');
     } else {
       setError('Invalid verification code.');
+    }
+  };
+
+  const handleResendCode = () => {
+    setResendTimer(30);
+    setOtp(['', '', '', '']);
+    setError(null);
+    const firstInput = inputRefs[0];
+    if (firstInput && firstInput.current) {
+      firstInput.current.focus();
     }
   };
 
@@ -87,44 +97,53 @@ export const OtpVerificationPage: React.FC = () => {
           </button>
         </div>
 
-        {/* 3. Main Heading & Subtitle */}
+        {/* 3. Main Heading & Code Label */}
         <div className="space-y-6 pt-2">
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight leading-tight">
             Enter your 4-digit code
           </h1>
 
-          <p className="text-xs font-semibold text-gray-400">
-            Code sent to <span className="font-bold text-gray-900">{tempPhone || '+880 1712345678'}</span>
-          </p>
+          {tempPhone && (
+            <p className="text-xs font-semibold text-gray-400">
+              Code sent to <span className="font-bold text-gray-900">{tempPhone}</span>
+            </p>
+          )}
 
-          {/* OTP Code Input Row */}
-          <form onSubmit={handleVerify} className="space-y-6 pt-2">
-            <div className="flex justify-between gap-3 pt-2">
-              {otp.map((digit, idx) => (
-                <input
-                  key={idx}
-                  ref={inputRefs[idx]}
-                  type="text"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  maxLength={1}
-                  value={digit}
-                  onChange={(e) => handleChange(idx, e.target.value)}
-                  onKeyDown={(e) => handleKeyDown(idx, e)}
-                  className="w-16 h-16 text-center text-2xl font-extrabold bg-gray-50 border-b-2 border-gray-300 focus:border-[#53B175] focus:bg-white focus:outline-none transition-all rounded-xl"
-                  autoFocus={idx === 0}
-                  aria-label={`Digit ${idx + 1}`}
-                />
-              ))}
-            </div>
+          <div className="space-y-2 pt-1">
+            <label className="text-xs font-semibold text-gray-400 block">
+              Code
+            </label>
 
-            {error && <p className="text-xs text-red-600 font-medium text-center pt-1">{error}</p>}
-          </form>
+            {/* 4-Digit OTP Input Row */}
+            <form onSubmit={handleVerify} className="space-y-4">
+              <div className="flex justify-start gap-4 pt-1 border-b border-gray-200 focus-within:border-[#53B175] pb-3 transition-colors">
+                {otp.map((digit, idx) => (
+                  <input
+                    key={idx}
+                    ref={inputRefs[idx]}
+                    type="tel"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleChange(idx, e.target.value)}
+                    onKeyDown={(e) => handleKeyDown(idx, e)}
+                    placeholder="-"
+                    className="w-10 h-10 text-center text-xl font-bold bg-transparent text-gray-900 placeholder:text-gray-300 focus:outline-none"
+                    autoFocus={idx === 0}
+                    aria-label={`Digit ${idx + 1}`}
+                  />
+                ))}
+              </div>
+
+              {error && <p className="text-xs text-red-600 font-medium pt-1">{error}</p>}
+            </form>
+          </div>
 
           {/* Resend Code Link */}
           <div className="pt-4">
             <button
-              onClick={() => setResendTimer(30)}
+              onClick={handleResendCode}
               disabled={resendTimer > 0}
               className="text-xs font-bold text-[#53B175] hover:underline disabled:opacity-50 flex items-center gap-1 focus-visible:outline-none"
               type="button"
@@ -135,8 +154,8 @@ export const OtpVerificationPage: React.FC = () => {
           </div>
         </div>
 
-        {/* 4. Lower-Middle 67x67px Circular Green Continue Button */}
-        <div className="flex justify-end pt-10 pr-1">
+        {/* 4. Lower-Middle 67x67px Circular Green Continue Button (Right Aligned) */}
+        <div className="flex justify-end pt-12 pr-1">
           <button
             onClick={handleVerify}
             className="w-[67px] h-[67px] bg-[#53B175] hover:bg-[#489d67] active:scale-95 text-white rounded-full flex items-center justify-center shadow-lg transition-all focus-visible:outline-none"

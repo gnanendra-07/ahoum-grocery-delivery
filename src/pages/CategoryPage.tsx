@@ -1,34 +1,31 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { Category, Product, ProductSortOption } from '../types';
 import { mockApi } from '../services/mockApi';
 import { ProductCard } from '../components/ProductCard';
 import { SkeletonGrid } from '../components/SkeletonLoader';
 import { ErrorMessage } from '../components/ErrorMessage';
-import { SlidersHorizontal, Leaf, PackageX } from 'lucide-react';
+import { ArrowLeft, SlidersHorizontal, PackageX, Wifi, Signal, Battery } from 'lucide-react';
 
 export const CategoryPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
 
-  const [categories, setCategories] = useState<Category[]>([]);
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   // Filters
-  const [sortBy, setSortBy] = useState<ProductSortOption>('popular');
-  const [isOrganicOnly, setIsOrganicOnly] = useState<boolean>(false);
+  const [sortBy] = useState<ProductSortOption>('popular');
+  const [isOrganicOnly] = useState<boolean>(false);
 
   const fetchCategoryData = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const catListRes = await mockApi.getCategories();
-      setCategories(catListRes.data);
-
-      const targetSlug = slug || 'fresh-fruits';
+      const targetSlug = slug || 'beverages';
       const catRes = await mockApi.getCategoryBySlug(targetSlug);
       setCurrentCategory(catRes.data);
 
@@ -54,94 +51,59 @@ export const CategoryPage: React.FC = () => {
     fetchCategoryData();
   }, [slug, sortBy, isOrganicOnly]);
 
+  const categoryName = currentCategory ? currentCategory.name : 'Beverages';
+
   return (
-    <div className="space-y-6">
-      {/* Category Navigation Bar */}
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-        {categories.map((cat) => {
-          const isActive = cat.slug === (slug || 'fresh-fruits');
-          return (
-            <Link
-              key={cat.id}
-              to={`/category/${cat.slug}`}
-              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                isActive
-                  ? 'bg-brand-600 text-white shadow-sm'
-                  : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-              }`}
-            >
-              {cat.name}
-            </Link>
-          );
-        })}
+    <div className="space-y-2.5 pb-20">
+      {/* 1. Status Bar / Top Safe Area */}
+      <div className="flex items-center justify-between text-xs font-semibold text-gray-900 pt-1 px-1">
+        <span>9:41</span>
+        <div className="flex items-center gap-1.5 text-gray-800">
+          <Signal className="w-3.5 h-3.5 fill-gray-800" />
+          <Wifi className="w-3.5 h-3.5" />
+          <Battery className="w-4 h-4 fill-gray-800" />
+        </div>
       </div>
 
-      {/* Category Header */}
-      {currentCategory && (
-        <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl overflow-hidden bg-brand-50 flex-shrink-0">
-            <img
-              src={currentCategory.image}
-              alt={currentCategory.name}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">{currentCategory.name}</h1>
-            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">{currentCategory.description}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Filters & Sorting Bar */}
-      <div className="flex items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+      {/* 2. Category Header: Back arrow | Beverages | Filter icon */}
+      <div className="flex items-center justify-between pt-0.5 pb-1">
         <button
-          onClick={() => setIsOrganicOnly(!isOrganicOnly)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-            isOrganicOnly
-              ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
-              : 'bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100'
-          }`}
+          onClick={() => navigate(-1)}
+          className="p-1 text-gray-800 hover:text-gray-900 transition-colors focus-visible:outline-none"
+          aria-label="Go back"
           type="button"
         >
-          <Leaf className="w-3.5 h-3.5" />
-          <span>Organic Only</span>
+          <ArrowLeft className="w-5 h-5" />
         </button>
 
-        <div className="flex items-center gap-2 text-xs text-gray-600">
-          <SlidersHorizontal className="w-4 h-4 text-gray-400" />
-          <span className="hidden sm:inline font-medium">Sort by:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as ProductSortOption)}
-            aria-label="Sort products by"
-            className="bg-gray-50 border border-gray-200 text-gray-800 text-xs font-medium rounded-xl px-3 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-          >
-            <option value="popular">Popularity</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="rating">Top Rated</option>
-          </select>
-        </div>
+        <h1 className="text-base font-bold text-gray-900 text-center">
+          {categoryName}
+        </h1>
+
+        <button
+          onClick={() => navigate('/filters')}
+          className="p-1 transition-colors focus-visible:outline-none text-gray-800 hover:text-gray-900"
+          aria-label="Open filters"
+          type="button"
+        >
+          <SlidersHorizontal className="w-5 h-5" />
+        </button>
       </div>
 
-      {/* Product List Content */}
+      {/* 3. 2-Column Compact Product Grid (All 3 Rows Fit) */}
       {loading ? (
-        <SkeletonGrid count={5} />
+        <SkeletonGrid count={6} />
       ) : error ? (
         <ErrorMessage message={error} onRetry={fetchCategoryData} />
       ) : products.length === 0 ? (
-        <div className="bg-white rounded-2xl p-8 text-center border border-gray-100 my-4">
-          <PackageX className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-          <h3 className="text-sm font-bold text-gray-800">No products found</h3>
-          <p className="text-xs text-gray-500 mt-1">
-            Try resetting your filters or select a different category.
-          </p>
+        <div className="bg-white rounded-2xl p-6 text-center border border-gray-100 my-4">
+          <PackageX className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+          <h3 className="text-xs font-bold text-gray-800">No products found</h3>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
+        <div className="grid grid-cols-2 gap-2.5">
           {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} compact={true} />
           ))}
         </div>
       )}

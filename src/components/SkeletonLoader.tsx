@@ -21,9 +21,9 @@ export const SkeletonProductCard: React.FC = () => {
   );
 };
 
-export const SkeletonGrid: React.FC<{ count?: number }> = ({ count = 5 }) => {
+export const SkeletonGrid: React.FC<{ count?: number }> = ({ count = 4 }) => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5" aria-busy="true">
+    <div className="grid grid-cols-2 gap-3.5" aria-busy="true">
       {Array.from({ length: count }).map((_, i) => (
         <SkeletonProductCard key={i} />
       ))}

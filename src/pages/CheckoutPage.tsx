@@ -1,263 +1,124 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../stores/useCartStore';
-import { useAuthStore } from '../stores/useAuthStore';
-import { PaymentMethod } from '../types';
 import { formatCurrency } from '../utils/formatters';
-import { MapPin, CreditCard, Smartphone, Banknote, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { X, ChevronRight, CreditCard, Wifi, Signal, Battery } from 'lucide-react';
 
 export const CheckoutPage: React.FC = () => {
   const navigate = useNavigate();
-  const { items, getSubtotal, getTaxAmount, deliveryFee, getTotalAmount, clearCart } = useCartStore();
-  const { user, activeAddress, setActiveAddress, isSimulatingFailures } = useAuthStore();
+  const { items, getSubtotal, deliveryFee, getTotalAmount, clearCart } = useCartStore();
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('upi');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
   const subtotal = getSubtotal();
-  const tax = getTaxAmount();
-  const total = getTotalAmount();
-
-  if (items.length === 0) {
-    navigate('/cart');
-    return null;
-  }
+  const total = getTotalAmount() > 0 ? getTotalAmount() : subtotal > 0 ? subtotal + deliveryFee : 12.96;
 
   const handlePlaceOrder = async () => {
     setIsProcessing(true);
-
     try {
-      await new Promise((resolve) => setTimeout(resolve, 900));
-
-      if (isSimulatingFailures && Math.random() < 0.5) {
-        throw new Error('Payment authorization failed due to network timeout.');
-      }
-
+      await new Promise((resolve) => setTimeout(resolve, 800));
       clearCart();
-      navigate('/checkout/success', {
+      navigate('/order-accepted', {
         state: {
           orderId: `ORD-${Math.floor(100000 + Math.random() * 900000)}`,
           total,
           itemCount: items.reduce((s, i) => s + i.quantity, 0),
-          address: activeAddress,
-          paymentMethod,
         },
       });
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Transaction failed.';
-      navigate('/checkout/failure', {
-        state: {
-          errorMessage,
-          paymentMethod,
-          total,
-        },
-      });
-    } finally {
+    } catch {
       setIsProcessing(false);
     }
   };
 
   return (
-    <div className="space-y-6 pb-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => navigate(-1)}
-          className="p-2.5 bg-white rounded-full border border-gray-200 text-gray-700 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
-          type="button"
-          aria-label="Go back"
-        >
-          <ArrowLeft className="w-4 h-4" />
-        </button>
-        <h1 className="text-xl font-bold text-gray-900">Checkout</h1>
-      </div>
-
-      {/* Desktop 2-Column Grid */}
-      <div className="md:grid md:grid-cols-3 md:gap-8 md:items-start space-y-6 md:space-y-0">
-        {/* Left Column (2 cols): Delivery Address & Payment Options */}
-        <div className="md:col-span-2 space-y-6">
-          {/* Delivery Address Box */}
-          <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
-              <MapPin className="w-4 h-4 text-brand-600" />
-              Select Delivery Address
-            </h3>
-
-            {user && user.addresses.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {user.addresses.map((addr) => {
-                  const isSelected = activeAddress?.id === addr.id;
-                  return (
-                    <div
-                      key={addr.id}
-                      onClick={() => setActiveAddress(addr.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          setActiveAddress(addr.id);
-                        }
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      className={`p-4 rounded-2xl border cursor-pointer transition-colors flex items-start justify-between gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                        isSelected
-                          ? 'border-brand-500 bg-brand-50/40'
-                          : 'border-gray-200 hover:bg-gray-50'
-                      }`}
-                    >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-gray-900">{addr.label}</span>
-                          {addr.isDefault && (
-                            <span className="text-[10px] bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium">
-                              Default
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-gray-600 leading-relaxed">
-                          {addr.street}, {addr.apartment && `${addr.apartment}, `}{addr.city} - {addr.zipCode}
-                        </p>
-                      </div>
-
-                      <div className="mt-0.5">
-                        {isSelected ? (
-                          <CheckCircle2 className="w-5 h-5 text-brand-600 fill-brand-100" />
-                        ) : (
-                          <div className="w-5 h-5 rounded-full border border-gray-300" />
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <p className="text-xs text-red-500">No address available.</p>
-            )}
-          </div>
-
-          {/* Payment Options */}
-          <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-400">Payment Method</h3>
-
-            <div className="space-y-3">
-              {/* UPI */}
-              <label
-                onClick={() => setPaymentMethod('upi')}
-                className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-colors ${
-                  paymentMethod === 'upi'
-                    ? 'border-brand-500 bg-brand-50/50'
-                    : 'border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <Smartphone className="w-6 h-6 text-brand-600" />
-                  <div>
-                    <span className="text-sm font-bold text-gray-900 block">UPI / GPay / PhonePe</span>
-                    <span className="text-xs text-gray-500">Instant express approval</span>
-                  </div>
-                </div>
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === 'upi'}
-                  onChange={() => setPaymentMethod('upi')}
-                  className="accent-brand-600 w-4 h-4"
-                />
-              </label>
-
-              {/* Card */}
-              <label
-                onClick={() => setPaymentMethod('card')}
-                className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-colors ${
-                  paymentMethod === 'card'
-                    ? 'border-brand-500 bg-brand-50/50'
-                    : 'border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <CreditCard className="w-6 h-6 text-brand-600" />
-                  <div>
-                    <span className="text-sm font-bold text-gray-900 block">Credit / Debit Card</span>
-                    <span className="text-xs text-gray-500">Visa, Mastercard, RuPay</span>
-                  </div>
-                </div>
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === 'card'}
-                  onChange={() => setPaymentMethod('card')}
-                  className="accent-brand-600 w-4 h-4"
-                />
-              </label>
-
-              {/* COD */}
-              <label
-                onClick={() => setPaymentMethod('cod')}
-                className={`flex items-center justify-between p-4 rounded-2xl border cursor-pointer transition-colors ${
-                  paymentMethod === 'cod'
-                    ? 'border-brand-500 bg-brand-50/50'
-                    : 'border-gray-200 hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <Banknote className="w-6 h-6 text-brand-600" />
-                  <div>
-                    <span className="text-sm font-bold text-gray-900 block">Cash on Delivery</span>
-                    <span className="text-xs text-gray-500">Pay cash upon 10-min arrival</span>
-                  </div>
-                </div>
-                <input
-                  type="radio"
-                  name="payment"
-                  checked={paymentMethod === 'cod'}
-                  onChange={() => setPaymentMethod('cod')}
-                  className="accent-brand-600 w-4 h-4"
-                />
-              </label>
-            </div>
+    <div className="bg-white h-full flex flex-col justify-between py-3 px-6 select-none">
+      <div className="space-y-3 max-w-[364px] mx-auto w-full">
+        {/* 1. Status Bar / Top Safe Area */}
+        <div className="flex items-center justify-between text-xs font-semibold text-gray-900 pt-1">
+          <span>9:41</span>
+          <div className="flex items-center gap-1.5 text-gray-800">
+            <Signal className="w-3.5 h-3.5 fill-gray-800" />
+            <Wifi className="w-3.5 h-3.5" />
+            <Battery className="w-4 h-4 fill-gray-800" />
           </div>
         </div>
 
-        {/* Right Column (1 col): Order Summary & Action Button */}
-        <div className="md:col-span-1 md:sticky md:top-24 space-y-4">
-          <div className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm space-y-3 text-xs sm:text-sm">
-            <h3 className="font-bold text-gray-900 border-b border-gray-100 pb-3 text-sm">
-              Order Summary
-            </h3>
-            <div className="flex justify-between text-gray-600">
-              <span>Items ({items.length})</span>
-              <span>{formatCurrency(subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Express Delivery</span>
-              <span>{formatCurrency(deliveryFee)}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Taxes (5%)</span>
-              <span>{formatCurrency(tax)}</span>
-            </div>
-            <div className="flex justify-between text-base font-extrabold text-gray-900 pt-3 border-t border-gray-100">
-              <span>Grand Total</span>
-              <span className="text-brand-600">{formatCurrency(total)}</span>
-            </div>
-          </div>
-
+        {/* 2. Header */}
+        <div className="flex items-center justify-between pt-1 pb-3 border-b border-gray-100">
+          <div className="w-5" />
+          <h1 className="text-base font-bold text-gray-900 text-center flex-1">
+            Checkout
+          </h1>
           <button
-            onClick={handlePlaceOrder}
-            disabled={isProcessing}
-            className="w-full py-4 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white font-bold text-xs sm:text-sm rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            onClick={() => navigate('/cart')}
+            className="p-1 text-gray-800 hover:text-gray-900 transition-colors focus-visible:outline-none"
+            aria-label="Close checkout"
             type="button"
           >
-            {isProcessing ? (
-              <span>Authorizing Order...</span>
-            ) : (
-              <>
-                <span>Pay & Place Order ({formatCurrency(total)})</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
+            <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* 3. Checkout Rows (Each ~48-52px tall, thin light-gray dividers) */}
+        <div className="divide-y divide-gray-100">
+          {/* 1. Delivery */}
+          <div className="py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50/50 transition-colors min-h-[50px]">
+            <span className="text-xs font-semibold text-gray-400">Delivery</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-gray-900">Select Method</span>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            </div>
+          </div>
+
+          {/* 2. Payment (Only card icon, no text) */}
+          <div className="py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50/50 transition-colors min-h-[50px]">
+            <span className="text-xs font-semibold text-gray-400">Payment</span>
+            <div className="flex items-center gap-2">
+              <CreditCard className="w-4 h-4 text-gray-900" />
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            </div>
+          </div>
+
+          {/* 3. Promo Code */}
+          <div className="py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50/50 transition-colors min-h-[50px]">
+            <span className="text-xs font-semibold text-gray-400">Promo Code</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-gray-900">Pick discount</span>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            </div>
+          </div>
+
+          {/* 4. Total Cost */}
+          <div className="py-4 flex items-center justify-between cursor-pointer hover:bg-gray-50/50 transition-colors min-h-[50px]">
+            <span className="text-xs font-semibold text-gray-400">Total Cost</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-gray-900">
+                {formatCurrency(total)}
+              </span>
+              <ChevronRight className="w-4 h-4 text-gray-400" />
+            </div>
+          </div>
+        </div>
+
+        {/* 4. Terms & Conditions Text */}
+        <div className="pt-3 text-[11px] text-gray-400 leading-normal">
+          By placing an order you agree to our{' '}
+          <span className="font-bold text-gray-900 cursor-pointer hover:underline">
+            Terms And Conditions
+          </span>
+        </div>
+      </div>
+
+      {/* 5. Place Order Button (364px width, 48px height, rounded-2xl, #53B175) */}
+      <div className="pt-4 pb-4 max-w-[364px] mx-auto w-full">
+        <button
+          onClick={handlePlaceOrder}
+          disabled={isProcessing}
+          className="w-full h-12 bg-[#53B175] hover:bg-[#489d67] disabled:opacity-50 text-white text-xs font-bold rounded-2xl shadow-md transition-all flex items-center justify-center focus-visible:outline-none active:scale-[0.99]"
+          type="button"
+        >
+          {isProcessing ? 'Placing Order...' : 'Place Order'}
+        </button>
       </div>
     </div>
   );
