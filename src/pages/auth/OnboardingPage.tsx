@@ -31,8 +31,8 @@ export const OnboardingPage: React.FC = () => {
 
   return (
     <div className="w-full h-full flex-1 flex flex-col justify-between bg-white text-gray-900 overflow-hidden no-scrollbar relative">
-      {/* Top Hero Delivery Worker Image Section */}
-      <div className="w-full h-[52%] relative bg-[#53B175]/10 overflow-hidden flex-shrink-0">
+      {/* Top Hero Delivery Worker Image Section (56% frame height) */}
+      <div className="w-full h-[56%] relative bg-[#53B175]/10 overflow-hidden flex-shrink-0">
         {!hasImageError ? (
           <img
             src={HERO_IMAGES[imageIndex]}
@@ -41,7 +41,7 @@ export const OnboardingPage: React.FC = () => {
             className="w-full h-full object-cover object-top transition-opacity duration-300"
           />
         ) : (
-          /* Guaranteed Vector Graphic Fallback */
+          /* Fallback for Offline / Error state */
           <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-3 bg-gradient-to-br from-emerald-600 via-[#53B175] to-teal-700 text-white relative">
             <div className="w-20 h-20 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center border border-white/30 shadow-xl">
               <Truck className="w-10 h-10 text-white" />
@@ -53,22 +53,22 @@ export const OnboardingPage: React.FC = () => {
             </div>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 to-white pointer-events-none" />
       </div>
 
       {/* Content Section */}
-      <div className="px-6 pb-8 pt-0 text-center flex-1 flex flex-col justify-between items-center z-10">
-        {/* Brand Carrot / Icon & Heading */}
-        <div className="space-y-3 -mt-6">
-          <div className="w-14 h-14 bg-[#53B175] text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg border-2 border-white">
-            <ShoppingBag className="w-7 h-7" />
+      <div className="px-8 pb-8 pt-0 text-center flex-1 flex flex-col justify-between items-center z-10">
+        {/* Brand Carrot / Icon & Heading Stack */}
+        <div className="space-y-3 -mt-7 flex flex-col items-center">
+          <div className="w-12 h-12 bg-[#53B175] text-white rounded-2xl flex items-center justify-center shadow-lg border-2 border-white">
+            <ShoppingBag className="w-6 h-6" />
           </div>
 
           <div className="space-y-1.5 pt-1">
-            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight leading-none">
+            <h1 className="text-3xl sm:text-4xl font-black text-gray-900 tracking-tight leading-tight">
               Welcome <br /> to our store
             </h1>
-            <p className="text-xs sm:text-sm text-gray-500 font-medium max-w-xs mx-auto leading-relaxed">
+            <p className="text-xs sm:text-sm text-gray-500 font-medium max-w-[260px] mx-auto leading-relaxed">
               Get your groceries as fast as one hour
             </p>
           </div>
