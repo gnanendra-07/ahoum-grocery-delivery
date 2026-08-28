@@ -13,7 +13,7 @@ export const OnboardingPage: React.FC = () => {
   };
 
   return (
-    <div className="w-full h-full min-h-[896px] bg-slate-900 text-white flex flex-col justify-between relative overflow-hidden">
+    <div className="w-full h-full flex-1 flex flex-col justify-between relative overflow-hidden bg-slate-950 text-white">
       {/* Top Background Hero Image */}
       <div className="absolute inset-0 z-0">
         <img
@@ -36,23 +36,30 @@ export const OnboardingPage: React.FC = () => {
       </div>
 
       {/* Bottom Content Area */}
-      <div className="p-8 z-10 text-center space-y-6 pb-12">
-        <div className="w-16 h-16 bg-[#53B175] text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg border border-white/20">
-          <ShoppingBag className="w-8 h-8" />
+      <div className="p-6 z-10 text-center space-y-5 pb-8">
+        <div className="w-14 h-14 bg-[#53B175] text-white rounded-2xl mx-auto flex items-center justify-center shadow-lg border border-white/20">
+          <ShoppingBag className="w-7 h-7" />
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <h2 className="text-3xl font-extrabold tracking-tight text-white leading-tight">
             Welcome <br /> to our store
           </h2>
-          <p className="text-xs sm:text-sm text-gray-300 max-w-xs mx-auto font-medium leading-relaxed">
+          <p className="text-xs text-gray-300 max-w-xs mx-auto font-medium leading-relaxed">
             Get your groceries as fast as one hour with express dark-store delivery.
           </p>
         </div>
 
+        {/* Carousel Indicators */}
+        <div className="flex items-center justify-center gap-1.5 py-1">
+          <span className="w-6 h-1.5 bg-[#53B175] rounded-full" />
+          <span className="w-1.5 h-1.5 bg-white/40 rounded-full" />
+          <span className="w-1.5 h-1.5 bg-white/40 rounded-full" />
+        </div>
+
         <button
           onClick={handleNext}
-          className="w-full py-4 bg-[#53B175] hover:bg-[#489d67] text-white text-base font-extrabold rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+          className="w-full py-3.5 bg-[#53B175] hover:bg-[#489d67] text-white text-base font-extrabold rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           type="button"
         >
           <span>Get Started</span>
