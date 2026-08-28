@@ -131,12 +131,13 @@ export const ProductDetailPage: React.FC = () => {
                 <button
                   key={idx}
                   onClick={() => setSelectedImage(img)}
+                  aria-label={`Select product image view ${idx + 1}`}
                   className={`w-16 h-16 rounded-xl overflow-hidden border-2 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
                     selectedImage === img ? 'border-brand-600 scale-105' : 'border-gray-200 opacity-70'
                   }`}
                   type="button"
                 >
-                  <img src={img} alt="" className="w-full h-full object-cover" />
+                  <img src={img} alt={`${product.name} preview ${idx + 1}`} className="w-full h-full object-cover" />
                 </button>
               ))}
             </div>

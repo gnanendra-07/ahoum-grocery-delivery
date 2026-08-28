@@ -91,7 +91,15 @@ export const CheckoutPage: React.FC = () => {
                     <div
                       key={addr.id}
                       onClick={() => setActiveAddress(addr.id)}
-                      className={`p-4 rounded-2xl border cursor-pointer transition-colors flex items-start justify-between gap-3 ${
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setActiveAddress(addr.id);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      className={`p-4 rounded-2xl border cursor-pointer transition-colors flex items-start justify-between gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
                         isSelected
                           ? 'border-brand-500 bg-brand-50/40'
                           : 'border-gray-200 hover:bg-gray-50'

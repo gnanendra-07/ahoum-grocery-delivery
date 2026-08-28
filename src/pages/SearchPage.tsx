@@ -211,7 +211,7 @@ export const SearchPage: React.FC = () => {
           {testLogs.length > 0 && (
             <div className="bg-white p-3 rounded-xl border border-purple-200 font-mono text-[11px] space-y-1.5 max-h-48 overflow-y-auto">
               {testLogs.map((logItem, idx) => (
-                <div key={idx} className="flex items-start gap-1.5">
+                <div key={`${idx}-${logItem.time}-${logItem.step.slice(0, 10)}`} className="flex items-start gap-1.5">
                   <span className="text-gray-400 text-[10px]">{logItem.time}</span>
                   <span
                     className={

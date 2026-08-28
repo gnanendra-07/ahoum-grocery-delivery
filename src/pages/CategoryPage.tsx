@@ -114,7 +114,8 @@ export const CategoryPage: React.FC = () => {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as ProductSortOption)}
-            className="bg-gray-50 border border-gray-200 text-gray-800 text-xs font-medium rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500"
+            aria-label="Sort products by"
+            className="bg-gray-50 border border-gray-200 text-gray-800 text-xs font-medium rounded-xl px-3 py-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
           >
             <option value="popular">Popularity</option>
             <option value="price-asc">Price: Low to High</option>
