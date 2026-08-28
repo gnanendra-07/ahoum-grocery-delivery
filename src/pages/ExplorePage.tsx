@@ -2,24 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Category } from '../types';
 import { mockApi } from '../services/mockApi';
+import { ErrorMessage } from '../components/ErrorMessage';
 import { Search } from 'lucide-react';
 
 export const ExplorePage: React.FC = () => {
   const navigate = useNavigate();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchCats = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await mockApi.getCategories();
+      setCategories(res.data);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Failed to load categories. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchCats = async () => {
-      try {
-        const res = await mockApi.getCategories();
-        setCategories(res.data);
-      } catch {
-        // Ignored
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchCats();
   }, []);
 
@@ -31,6 +40,7 @@ export const ExplorePage: React.FC = () => {
     'bg-purple-500/10 border-purple-500/30', // Bakery & Snacks - Light Purple
     'bg-amber-500/10 border-amber-500/30', // Dairy & Eggs - Light Yellow
     'bg-blue-500/10 border-blue-500/30', // Beverages - Light Blue
+    'bg-teal-500/10 border-teal-500/30', // Additional category
   ];
 
   return (
@@ -44,6 +54,10 @@ export const ExplorePage: React.FC = () => {
       <div
         onClick={() => navigate('/search')}
         className="flex items-center bg-gray-100 hover:bg-gray-150 rounded-2xl px-4 py-3 cursor-pointer text-gray-400 text-xs font-medium transition-colors border border-transparent"
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => e.key === 'Enter' && navigate('/search')}
+        aria-label="Search store"
       >
         <Search className="w-4 h-4 text-gray-500 mr-2 flex-shrink-0" />
         <span className="text-gray-400 font-medium">Search Store</span>
@@ -56,15 +70,22 @@ export const ExplorePage: React.FC = () => {
             <div key={i} className="h-44 rounded-2xl bg-gray-100 border border-gray-200" />
           ))}
         </div>
+      ) : error ? (
+        <ErrorMessage
+          title="Failed to load categories"
+          message={error}
+          onRetry={fetchCats}
+        />
       ) : (
         <div className="grid grid-cols-2 gap-3.5">
           {categories.map((cat, idx) => {
-            const style = cardStyles[idx % cardStyles.length];
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            const style = cardStyles[idx % cardStyles.length]!;
             return (
               <Link
                 key={cat.id}
                 to={`/category/${cat.slug}`}
-                className={`rounded-2xl border ${style} p-4 flex flex-col items-center justify-between text-center h-44 hover:shadow-sm transition-all group`}
+                className={`rounded-2xl border ${style} p-4 flex flex-col items-center justify-between text-center h-44 hover:shadow-sm transition-all group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] focus-visible:ring-offset-1`}
               >
                 <div className="w-24 h-24 flex items-center justify-center overflow-hidden my-auto">
                   <img

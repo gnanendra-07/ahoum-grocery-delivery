@@ -78,10 +78,10 @@ export const LoginPage: React.FC = () => {
         {/* 3. Heading & Subtitle */}
         <div className="space-y-1">
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
-            Loging
+            Login
           </h1>
           <p className="text-xs font-semibold text-gray-400">
-            Enter your emails and password
+            Enter your email and password
           </p>
         </div>
 
@@ -151,7 +151,7 @@ export const LoginPage: React.FC = () => {
           <div className="pt-4">
             <button
               type="submit"
-              className="w-full h-12 bg-[#53B175] hover:bg-[#489d67] active:scale-[0.99] text-white text-xs font-bold rounded-2xl shadow-md transition-all flex items-center justify-center focus-visible:outline-none"
+              className="w-full h-12 bg-[#53B175] hover:bg-[#489d67] active:scale-[0.99] text-white text-xs font-bold rounded-2xl shadow-md transition-all flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] focus-visible:ring-offset-2"
             >
               Log In
             </button>

@@ -78,7 +78,7 @@ export const OnboardingPage: React.FC = () => {
         <div className="w-full pt-4 max-w-sm">
           <button
             onClick={handleGetStarted}
-            className="w-full py-4 bg-[#53B175] hover:bg-[#489d67] text-white text-base font-extrabold rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] active:scale-[0.99]"
+            className="w-full py-4 bg-[#53B175] hover:bg-[#489d67] text-white text-base font-extrabold rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] focus-visible:ring-offset-2 active:scale-[0.99]"
             type="button"
           >
             <span>Get Started</span>

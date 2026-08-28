@@ -1,4 +1,11 @@
+/**
+ * @deprecated UNUSED — This file is NOT registered in AppRoutes.tsx.
+ * The active Sign In landing screen is SignInPage.tsx (route: /auth).
+ * AuthLandingPage.tsx is a near-duplicate of SignInPage.tsx that was kept
+ * as a reference but is dead code. Do not add new logic here.
+ */
 import React from 'react';
+
 import { useNavigate } from 'react-router-dom';
 import { Wifi, Signal, Battery } from 'lucide-react';
 import { useAuthStore } from '../../stores/useAuthStore';

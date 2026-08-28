@@ -41,7 +41,7 @@ export const OrderFailedPage: React.FC = () => {
       <div className="space-y-3.5 w-full max-w-[382px] mx-auto pb-1">
         <button
           onClick={() => navigate('/checkout')}
-          className="w-full h-12 bg-[#53B175] hover:bg-[#489d67] active:scale-[0.99] text-white text-xs font-bold rounded-2xl shadow-md transition-all flex items-center justify-center focus-visible:outline-none"
+          className="w-full h-12 bg-[#53B175] hover:bg-[#489d67] active:scale-[0.99] text-white text-xs font-bold rounded-2xl shadow-md transition-all flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] focus-visible:ring-offset-2"
           type="button"
         >
           Try Again
@@ -49,7 +49,7 @@ export const OrderFailedPage: React.FC = () => {
 
         <button
           onClick={() => navigate('/home')}
-          className="text-xs font-bold text-gray-900 hover:text-gray-600 transition-colors focus-visible:outline-none block w-full text-center py-1"
+          className="text-xs font-bold text-gray-900 hover:text-gray-600 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-1 block w-full text-center py-1"
           type="button"
         >
           Back to home

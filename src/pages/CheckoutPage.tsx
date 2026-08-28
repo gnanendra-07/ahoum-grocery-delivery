@@ -114,7 +114,7 @@ export const CheckoutPage: React.FC = () => {
         <button
           onClick={handlePlaceOrder}
           disabled={isProcessing}
-          className="w-full h-12 bg-[#53B175] hover:bg-[#489d67] disabled:opacity-50 text-white text-xs font-bold rounded-2xl shadow-md transition-all flex items-center justify-center focus-visible:outline-none active:scale-[0.99]"
+          className="w-full h-12 bg-[#53B175] hover:bg-[#489d67] disabled:opacity-50 text-white text-xs font-bold rounded-2xl shadow-md transition-all flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] focus-visible:ring-offset-2 active:scale-[0.99]"
           type="button"
         >
           {isProcessing ? 'Placing Order...' : 'Place Order'}

@@ -24,6 +24,14 @@
       overflow: auto;
     }
   }
+
+  /* WCAG 2.1 AA — Global keyboard focus indicator.
+     Applies as a base fallback; individual elements may override with Tailwind ring utilities. */
+  *:focus-visible {
+    outline: 2px solid #53B175;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
 }
 
 @layer utilities {
