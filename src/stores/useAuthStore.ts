@@ -194,19 +194,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   setActiveAddress: (addressId: string) => {
-    const user = get().user;
-    if (!user) return;
-    const targetAddr = user.addresses.find((a) => a.id === addressId) || null;
-    if (targetAddr) {
-      const session = {
-        user: { ...user, activeAddressId: addressId },
-        isAuthenticated: get().isAuthenticated,
-        hasCompletedOnboarding: get().hasCompletedOnboarding,
-        activeAddress: targetAddr,
-      };
-      saveSessionToStorage(session);
-      set(session);
-    }
+    const currentUser = get().user || mockUser;
+    const targetAddr =
+      currentUser.addresses.find((a) => a.id === addressId) ||
+      currentUser.addresses[0] ||
+      defaultAddress;
+
+    const session = {
+      user: { ...currentUser, activeAddressId: targetAddr.id },
+      isAuthenticated: true,
+      hasCompletedOnboarding: true,
+      activeAddress: targetAddr,
+    };
+    saveSessionToStorage(session);
+    set(session);
   },
 
   setCustomLocation: (label: string, street: string, city: string, zipCode: string) => {
@@ -249,7 +250,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const session = {
       user: null,
       isAuthenticated: false,
-      hasCompletedOnboarding: get().hasCompletedOnboarding,
+      hasCompletedOnboarding: false,
       activeAddress: null,
     };
     saveSessionToStorage(session);

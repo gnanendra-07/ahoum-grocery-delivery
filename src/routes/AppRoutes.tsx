@@ -25,12 +25,31 @@ import { LocationSelectionPage } from '../pages/auth/LocationSelectionPage';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { SignUpPage } from '../pages/auth/SignUpPage';
 
+/**
+ * RootHomeGuard ensures unauthenticated users land directly on /welcome.
+ * Only authenticated users can access the Grocery Home page.
+ */
 const RootHomeGuard: React.FC = () => {
-  const { isAuthenticated, hasCompletedOnboarding } = useAuthStore();
-  if (!isAuthenticated && !hasCompletedOnboarding) {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  if (!isAuthenticated) {
     return <Navigate to="/welcome" replace />;
   }
+
   return <HomePage />;
+};
+
+/**
+ * AuthRouteGuard prevents authenticated users from returning to auth screens.
+ */
+const AuthRouteGuard: React.FC<{ children: React.ReactElement }> = ({ children }) => {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  if (isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
 };
 
 export const AppRoutes: React.FC = () => {
@@ -51,14 +70,14 @@ export const AppRoutes: React.FC = () => {
 
       {/* 2. Dedicated Auth & Onboarding Routes (414 x 896 Mobile App Frame, NO Header/BottomNav) */}
       <Route element={<AuthLayout />}>
-        <Route path="welcome" element={<SplashScreenPage />} />
-        <Route path="onboarding" element={<OnboardingPage />} />
-        <Route path="auth" element={<AuthLandingPage />} />
-        <Route path="auth/phone" element={<PhoneInputPage />} />
-        <Route path="auth/verify" element={<OtpVerificationPage />} />
+        <Route path="welcome" element={<AuthRouteGuard><SplashScreenPage /></AuthRouteGuard>} />
+        <Route path="onboarding" element={<AuthRouteGuard><OnboardingPage /></AuthRouteGuard>} />
+        <Route path="auth" element={<AuthRouteGuard><AuthLandingPage /></AuthRouteGuard>} />
+        <Route path="auth/phone" element={<AuthRouteGuard><PhoneInputPage /></AuthRouteGuard>} />
+        <Route path="auth/verify" element={<AuthRouteGuard><OtpVerificationPage /></AuthRouteGuard>} />
         <Route path="auth/location" element={<LocationSelectionPage />} />
-        <Route path="login" element={<LoginPage />} />
-        <Route path="signup" element={<SignUpPage />} />
+        <Route path="login" element={<AuthRouteGuard><LoginPage /></AuthRouteGuard>} />
+        <Route path="signup" element={<AuthRouteGuard><SignUpPage /></AuthRouteGuard>} />
       </Route>
 
       {/* Catch-all redirect */}
