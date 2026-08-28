@@ -1,28 +1,26 @@
 import React from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-import { ShoppingBag, MapPin, Search, AlertTriangle, ShieldCheck, Heart, Home, LayoutGrid, User as UserIcon, LogOut } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ShoppingBag, MapPin, Search, AlertTriangle, ShieldCheck, User as UserIcon, LogOut } from 'lucide-react';
 import { useCartStore } from '../stores/useCartStore';
-import { useFavoritesStore } from '../stores/useFavoritesStore';
 import { useAuthStore } from '../stores/useAuthStore';
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
   const totalItems = useCartStore((state) => state.getTotalItemsCount());
-  const favoriteCount = useFavoritesStore((state) => state.favoriteIds.length);
   const { user, isAuthenticated, activeAddress, isSimulatingFailures, toggleSimulateFailures, logout } = useAuthStore();
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200/80 shadow-sm">
       {/* Simulation Banner */}
       {isSimulatingFailures && (
-        <div className="bg-amber-500 text-white text-xs font-semibold px-4 py-1 flex items-center justify-between">
-          <span className="flex items-center gap-1.5 max-w-7xl mx-auto w-full">
-            <AlertTriangle className="w-3.5 h-3.5" />
-            API Failure Simulation Enabled (30% random error rate)
+        <div className="bg-amber-500 text-white text-[11px] font-semibold px-3 py-1 flex items-center justify-between">
+          <span className="flex items-center gap-1 truncate">
+            <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
+            API Failure Enabled (30%)
           </span>
           <button
             onClick={toggleSimulateFailures}
-            className="underline hover:text-amber-100 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded"
+            className="underline hover:text-amber-100 text-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white rounded ml-2"
             type="button"
           >
             Disable
@@ -30,116 +28,64 @@ export const Header: React.FC = () => {
         </div>
       )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
-        {/* Left: Brand & Address */}
-        <div className="flex items-center gap-4">
+      <div className="px-3.5 py-2.5 flex items-center justify-between gap-2">
+        {/* Left: Brand & Address Chip */}
+        <div className="flex items-center gap-2 min-w-0">
           <Link
             to="/"
-            className="flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-0.5"
+            className="flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 rounded-lg p-0.5 flex-shrink-0"
           >
-            <span className="text-2xl font-black bg-gradient-to-r from-brand-600 to-brand-500 bg-clip-text text-transparent">
+            <span className="text-xl font-black bg-gradient-to-r from-[#53B175] to-emerald-600 bg-clip-text text-transparent">
               Ahoum
-            </span>
-            <span className="text-[10px] font-bold px-2 py-0.5 bg-brand-100 text-brand-800 rounded-full uppercase tracking-wider">
-              10 Min
             </span>
           </Link>
 
           {/* Location Chip */}
           <button
             onClick={() => navigate('/auth/location')}
-            className="hidden sm:flex items-center gap-1.5 text-xs text-gray-500 bg-gray-50 hover:bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200/60 max-w-[240px] truncate transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="flex items-center gap-1 text-[11px] text-gray-600 bg-gray-50 hover:bg-gray-100 px-2 py-1 rounded-xl border border-gray-200/60 truncate transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
             title="Change Delivery Location"
             type="button"
           >
-            <MapPin className="w-3.5 h-3.5 text-brand-600 flex-shrink-0" />
-            <span className="font-medium text-gray-700 truncate">
-              {activeAddress ? `${activeAddress.label} • ${activeAddress.street}` : 'Select Location'}
+            <MapPin className="w-3 h-3 text-[#53B175] flex-shrink-0" />
+            <span className="font-semibold text-gray-800 truncate">
+              {activeAddress ? activeAddress.street : 'Select Location'}
             </span>
           </button>
         </div>
 
-        {/* Center: Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1 lg:gap-2" aria-label="Desktop navigation">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                isActive ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`
-            }
-          >
-            <Home className="w-4 h-4" />
-            <span>Home</span>
-          </NavLink>
-
-          <NavLink
-            to="/category/fresh-fruits"
-            className={({ isActive }) =>
-              `flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                isActive ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`
-            }
-          >
-            <LayoutGrid className="w-4 h-4" />
-            <span>Categories</span>
-          </NavLink>
-
-          <NavLink
-            to="/favorites"
-            className={({ isActive }) =>
-              `relative flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
-                isActive ? 'bg-brand-50 text-brand-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-              }`
-            }
-          >
-            <Heart className="w-4 h-4" />
-            <span>Saved</span>
-            {favoriteCount > 0 && (
-              <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full">
-                {favoriteCount}
-              </span>
-            )}
-          </NavLink>
-        </nav>
-
-        {/* Right: Search, Auth & Cart */}
-        <div className="flex items-center gap-2">
+        {/* Right: Quick Search, Dev Toggle, User Auth & Cart */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           {/* Quick Search */}
           <button
             onClick={() => navigate('/search')}
-            className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-gray-500 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="p-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl text-gray-500 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
             aria-label="Search products"
             type="button"
           >
-            <Search className="w-4 h-4 text-gray-400" />
-            <span className="hidden sm:inline text-gray-400">Search groceries...</span>
+            <Search className="w-4 h-4 text-gray-500" />
           </button>
 
-          {/* User Auth Action Chip */}
+          {/* User Profile / Auth Toggle */}
           {isAuthenticated && user ? (
-            <div className="hidden sm:flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-xl px-2.5 py-1 text-xs">
-              <UserIcon className="w-3.5 h-3.5 text-brand-600" />
-              <span className="font-bold text-gray-800 max-w-[90px] truncate">{user.name.split(' ')[0]}</span>
-              <button
-                onClick={() => {
-                  logout();
-                  navigate('/welcome');
-                }}
-                title="Log Out"
-                className="text-gray-400 hover:text-red-600 ml-1 p-0.5 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
-                type="button"
-              >
-                <LogOut className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                logout();
+                navigate('/welcome');
+              }}
+              title={`Logged in as ${user.name}. Click to log out.`}
+              className="p-1.5 bg-gray-50 hover:bg-red-50 text-gray-600 hover:text-red-600 border border-gray-200 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500"
+              type="button"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
           ) : (
             <Link
               to="/welcome"
-              className="hidden sm:flex items-center gap-1 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+              className="p-1.5 bg-gray-50 hover:bg-brand-50 text-gray-600 hover:text-[#53B175] border border-gray-200 rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
+              title="Sign In"
             >
-              <UserIcon className="w-3.5 h-3.5" />
-              <span>Sign In</span>
+              <UserIcon className="w-4 h-4" />
             </Link>
           )}
 
@@ -147,7 +93,7 @@ export const Header: React.FC = () => {
           <button
             onClick={toggleSimulateFailures}
             title={isSimulatingFailures ? 'Disable Network Failures' : 'Enable Network Failures'}
-            className={`p-2 rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 ${
+            className={`p-1.5 rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175] ${
               isSimulatingFailures
                 ? 'bg-amber-50 text-amber-600 border-amber-200'
                 : 'bg-gray-50 text-gray-400 border-gray-200 hover:text-gray-600'
@@ -165,13 +111,12 @@ export const Header: React.FC = () => {
           {/* Cart Icon Link */}
           <Link
             to="/cart"
-            className="relative flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold rounded-xl shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+            className="relative flex items-center justify-center p-1.5 bg-[#53B175] hover:bg-[#489d67] text-white rounded-xl shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#53B175]"
             aria-label={`Shopping cart with ${totalItems} items`}
           >
             <ShoppingBag className="w-4 h-4" />
-            <span className="hidden sm:inline">Cart</span>
             {totalItems > 0 && (
-              <span className="bg-white text-brand-700 text-[10px] font-extrabold w-4 h-4 rounded-full flex items-center justify-center">
+              <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-extrabold h-4 min-w-[16px] px-1 rounded-full flex items-center justify-center border-2 border-white">
                 {totalItems > 99 ? '99+' : totalItems}
               </span>
             )}

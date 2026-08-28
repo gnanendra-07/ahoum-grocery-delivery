@@ -5,12 +5,12 @@ import { BottomNav } from '../components/BottomNav';
 
 export const MainLayout: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      {/* Responsive Main Container Shell */}
-      <div className="w-full max-w-7xl mx-auto bg-gray-50 min-h-screen shadow-md flex flex-col relative pb-20 md:pb-8 border-x border-gray-200/60">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-0 sm:p-6 overflow-x-hidden">
+      {/* Figma 414 x 896 px Mobile App Frame Proportions Container */}
+      <div className="w-full sm:w-[414px] min-h-screen sm:min-h-[896px] sm:h-[896px] bg-gray-50 sm:rounded-[40px] shadow-2xl overflow-y-auto overflow-x-hidden border-0 sm:border-[8px] sm:border-slate-800 flex flex-col relative">
         <Header />
         
-        <main className="flex-1 px-4 sm:px-6 lg:px-8 py-5">
+        <main className="flex-1 px-4 py-4 pb-20">
           <Outlet />
         </main>
 

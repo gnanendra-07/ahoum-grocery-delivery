@@ -21,9 +21,9 @@ export const SkeletonProductCard: React.FC = () => {
   );
 };
 
-export const SkeletonGrid: React.FC<{ count?: number }> = ({ count = 5 }) => {
+export const SkeletonGrid: React.FC<{ count?: number }> = ({ count = 4 }) => {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5" aria-busy="true">
+    <div className="grid grid-cols-2 gap-3" aria-busy="true">
       {Array.from({ length: count }).map((_, i) => (
         <SkeletonProductCard key={i} />
       ))}
@@ -33,7 +33,7 @@ export const SkeletonGrid: React.FC<{ count?: number }> = ({ count = 5 }) => {
 
 export const SkeletonProductDetail: React.FC = () => {
   return (
-    <div className="space-y-4 md:grid md:grid-cols-2 md:gap-8 md:space-y-0 animate-pulse" aria-busy="true" aria-label="Loading product details">
+    <div className="space-y-4 animate-pulse" aria-busy="true" aria-label="Loading product details">
       <div className="bg-white rounded-2xl p-4 border border-gray-100 space-y-3">
         <div className="aspect-square w-full rounded-xl bg-gray-200" />
       </div>

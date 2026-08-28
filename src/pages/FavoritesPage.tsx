@@ -88,7 +88,7 @@ export const FavoritesPage: React.FC = () => {
       ) : error ? (
         <ErrorMessage message={error} onRetry={fetchFavorites} />
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5">
+        <div className="grid grid-cols-2 gap-3">
           {favoriteProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
