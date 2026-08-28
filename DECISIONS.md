@@ -1,48 +1,69 @@
-# Technical Decisions — Ahoum Grocery Delivery App
+# Engineering Decisions — Ahoum Grocery Delivery Application
 
-This document records architectural choices and engineering decisions made across project phases.
-
----
-
-## 1. Responsive Desktop Container Architecture
-- **Context:** Previously, the app container was locked to `max-w-md` on all viewports, restricting desktop display.
-- **Decision:** Expanded container shell in `MainLayout.tsx` to `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8`.
-- **Breakpoints Used:** Pure Tailwind CSS media queries (`sm:`, `md:`, `lg:`, `xl:`). Zero JS window resize listeners were added, preserving declarative rendering performance.
+This document records non-trivial architectural choices, state management design, and engineering trade-offs made during development.
 
 ---
 
-## 2. Desktop Navigation & Mobile-First Integrity
-- **Context:** Bottom navigation is optimal for mobile thumbs but redundant on desktop.
-- **Decision:**
-  - Added `md:hidden` to `BottomNav.tsx` to hide bottom navigation on desktop viewports.
-  - Added desktop navigation links in `Header.tsx` (`hidden md:flex`) supporting Home, Categories, Saved/Favorites (with badge), Search, and Cart (with badge).
+## 1. Persisted Cart Integrity & Revalidation Policy
+
+### Context & Problem
+Cart state stored in `localStorage` can become stale or corrupted between sessions (e.g. products deleted from catalog, prices updated by merchants, quantities stored exceeding available inventory, or invalid JSON structures).
+
+### Options Considered
+1. **Raw Storage Trust:** Load JSON directly from `localStorage` into memory without validation.
+   - *Pros:* Simple implementation.
+   - *Cons:* Prone to app crashes, pricing errors, and out-of-stock checkout failures.
+2. **Strict Server-Controlled Cart:** Fetch cart items from a backend API on every render.
+   - *Pros:* Always accurate.
+   - *Cons:* Requires a live backend database; unsuited for offline/client-side storage.
+3. **Resilient Local Storage + App Mount Revalidation (Chosen Solution):**
+   - Implement `loadCartFromStorage()` with defensive type-checking and schema filtering.
+   - Trigger `revalidateCart(latestProducts)` on application mount in `App.tsx`.
+
+### Exact Handled Cases & Behavior Matrix
+
+| Edge Case | Detection Mechanism | Handled Action / Behavior |
+| :--- | :--- | :--- |
+| **a. Product no longer exists** | `!productMap.has(item.product.id)` | Item is automatically removed from cart during `revalidateCart()`. |
+| **b. Product price changed** | `latestProd.price !== item.product.price` | Product metadata and price in cart are updated to latest catalog price (`latestProd.price` / `latestProd.discountPrice`). |
+| **c. Quantity exceeds stock** | `item.quantity > latestProd.stock` | Item quantity is clamped to `latestProd.stock` (`Math.min(item.quantity, latestProd.stock)`). |
+| **d. Product out of stock (stock === 0)** | `latestProd.stock <= 0` | Item is automatically dropped from cart during revalidation. |
+| **e. Quantity becomes <= 0** | `quantity <= 0` | Calling `updateQuantity(id, 0)` invokes `removeItem(id)` to purge item. |
+| **f. Corrupted JSON / invalid schema** | `JSON.parse` throw or schema type mismatch | `loadCartFromStorage()` catches error cleanly and resets cart to `[]` without crashing. |
 
 ---
 
-## 3. Responsive Product Grid Scaling
-- **Context:** 2-column grids on wide desktop viewports leave excessive empty horizontal whitespace.
-- **Decision:** Applied responsive grid column utility scaling: `grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-5` across `HomePage`, `CategoryPage`, `FavoritesPage`, `SearchPage`, and `SkeletonGrid`.
+## 2. Asynchronous Search Race Condition Guarding
+
+### Context & Problem
+Rapid user keystrokes in search input fields can trigger multiple asynchronous HTTP/mock requests. If an earlier request (e.g. Request 1 for "egg" with 800ms latency) resolves *after* a later request (e.g. Request 2 for "apple" with 200ms latency), the UI will display stale results for "egg" even though the input field shows "apple".
+
+### Options Considered
+1. **Debounce Only:** Delay API invocation by 300ms.
+   - *Pros:* Reduces request count.
+   - *Cons:* Does not prevent race conditions if network latency varies (e.g. 200ms vs 1200ms).
+2. **AbortController Cancellation + Request Counter Sequence Validation (Chosen Solution):**
+   - Maintain an `AbortController` instance in a React `useRef`. Cancel previous in-flight requests on new input using `controller.abort()`.
+   - Maintain an incremental `latestRequestIdRef` sequence counter. Ignore any promise resolution where `currentRequestId !== latestRequestIdRef.current`.
+
+### Trade-offs & Verification
+- **Trade-off:** Adds minor overhead to component state management.
+- **Verification:** Verified via automated unit tests in `src/tests/standalone.test.ts` (`npm test`) demonstrating that slow out-of-order responses never overwrite active search results.
 
 ---
 
-## 4. Desktop 2-Column Product Detail, Cart & Checkout Layouts
-- **Decision:** Utilized 2-column grid layouts on medium/large screens (`md:grid md:grid-cols-3 md:gap-8`):
-  - **Product Detail:** Image gallery on left column, details/actions on right column.
-  - **Cart Page:** Cart items on left column (2 cols), sticky bill breakdown & checkout trigger on right column (1 col).
-  - **Checkout Page:** Delivery address & payment method cards on left column (2 cols), sticky order summary & pay button on right column (1 col).
+## 3. Strict Route Nesting & Layout Separation Architecture
 
----
+### Context & Problem
+Mixing fixed 414 × 896 mobile auth screens (Splash, Onboarding, Sign In, Mobile Number, Verification, Select Location, Login, Sign Up) with responsive grocery application routes (`/home`, `/explore`, `/cart`, `/checkout`) can lead to route collisions, double-framing, or unexpected headers appearing on auth pages.
 
-## 5. Search Race-Condition Protection Strategy
-- **Context:** Rapid text input in search fields can trigger multiple overlapping asynchronous requests.
-- **Decision:** Combined `AbortController` cancellation with a `latestRequestId` counter reference in `SearchPage.tsx` and `MockApiService`. Verified via automated race condition test panel.
+### Options Considered
+1. **Single Global Layout Wrapper:** Render global `Header` and `BottomNav` on every page and manually hide them via route conditionals.
+   - *Pros:* Single layout file.
+   - *Cons:* Fragile, error-prone, hard to maintain.
+2. **Separated Sub-tree Layout Routes (`MainLayout` & `AuthLayout`) (Chosen Solution):**
+   - `<Route element={<MainLayout />}>` wraps browsing pages with responsive header, main container, and bottom nav.
+   - `<Route element={<AuthLayout />}>` wraps authentication flows inside a clean 414 × 896 `DeviceFrameWrapper` without global headers or navigation bars.
 
----
-
-## 6. Persisted Cart Consistency & Stock Limits
-- **Decision:** `loadCartFromStorage` handles malformed JSON without crashing. `revalidateCart` syncs prices, prunes deleted items, clamps quantities to `product.stock`, and purges 0-quantity entries.
-
----
-
-## 7. Accessibility & Semantics
-- **Decision:** Applied explicit `type="button"` attributes to all non-submitting buttons, `focus-visible:ring-2 focus-visible:ring-brand-500` rings for keyboard navigation, and descriptive `aria-label` attributes on icon-only controls.
+### Trade-offs
+- Requires clear boundary definition in `AppRoutes.tsx`, but guarantees zero header/nav leaks on mobile authentication screens.
