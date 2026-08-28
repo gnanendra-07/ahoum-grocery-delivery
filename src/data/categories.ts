@@ -1,0 +1,58 @@
+import { Category } from '../types';
+
+export const mockCategories: Category[] = [
+  {
+    id: 'cat-1',
+    name: 'Fresh Fruits',
+    slug: 'fresh-fruits',
+    iconName: 'Apple',
+    description: 'Farm-fresh organic and seasonal fruits',
+    image: 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?auto=format&fit=crop&w=600&q=80',
+    productCount: 12,
+  },
+  {
+    id: 'cat-2',
+    name: 'Vegetables',
+    slug: 'vegetables',
+    iconName: 'Carrot',
+    description: 'Crisp vegetables, leafy greens and herbs',
+    image: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80',
+    productCount: 16,
+  },
+  {
+    id: 'cat-3',
+    name: 'Dairy & Eggs',
+    slug: 'dairy-eggs',
+    iconName: 'Milk',
+    description: 'Fresh milk, butter, cheese and farm eggs',
+    image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&w=600&q=80',
+    productCount: 10,
+  },
+  {
+    id: 'cat-4',
+    name: 'Bakery & Bread',
+    slug: 'bakery-bread',
+    iconName: 'Sandwich',
+    description: 'Freshly baked artisanal bread, rolls & buns',
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80',
+    productCount: 8,
+  },
+  {
+    id: 'cat-5',
+    name: 'Beverages',
+    slug: 'beverages',
+    iconName: 'Coffee',
+    description: 'Juices, cold brews, teas and mineral waters',
+    image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=600&q=80',
+    productCount: 14,
+  },
+  {
+    id: 'cat-6',
+    name: 'Snacks & Munchies',
+    slug: 'snacks-munchies',
+    iconName: 'Cookie',
+    description: 'Nuts, dried fruits, chips and healthy bites',
+    image: 'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=600&q=80',
+    productCount: 15,
+  },
+];
