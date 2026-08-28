@@ -9,7 +9,7 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
   children,
   bgColor = 'bg-gray-50',
 }) => {
-  const [scale, setScale] = useState<number>(1);
+  const [scale, setScale] = useState<number>(0.85);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
 
   useEffect(() => {
@@ -17,15 +17,18 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
       const desktop = window.innerWidth >= 640;
       setIsDesktop(desktop);
       if (desktop) {
-        const paddingW = 32;
-        const paddingH = 32;
-        const availableW = window.innerWidth - paddingW;
-        const availableH = window.innerHeight - paddingH;
-        const scaleW = availableW / 414;
-        const scaleH = availableH / 896;
-        // Exact restored desktop preview scaling (capped at 1.0 MAX)
-        const fitScale = Math.min(1, Math.min(scaleW, scaleH));
-        setScale(Math.max(0.4, fitScale));
+        // Reserve padding so phone mockup fits completely within desktop window
+        const padding = 32;
+        const availableW = window.innerWidth - padding;
+        const availableH = window.innerHeight - padding;
+        // Total outer phone frame dimensions including 8px borders
+        const totalW = 430;
+        const totalH = 912;
+        const scaleW = availableW / totalW;
+        const scaleH = availableH / totalH;
+        // Cap desktop phone preview scale at 0.85 max so it fits comfortably on any screen without overflow
+        const fitScale = Math.min(0.85, Math.min(scaleW, scaleH));
+        setScale(Math.max(0.35, fitScale));
       } else {
         setScale(1);
       }
@@ -50,7 +53,7 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
   const scaledHeight = 896 * scale;
 
   return (
-    <div className="h-screen w-screen bg-slate-950 flex items-center justify-center overflow-hidden p-0">
+    <div className="fixed inset-0 w-screen h-screen bg-slate-950 flex items-center justify-center overflow-hidden p-0 z-50">
       {/* Wrapper box matching scaled footprint */}
       <div
         style={{
