@@ -55,4 +55,13 @@ export const mockCategories: Category[] = [
     image: 'https://images.unsplash.com/photo-1599490659213-e2b9527bd087?auto=format&fit=crop&w=600&q=80',
     productCount: 15,
   },
+  {
+    id: 'cat-7',
+    name: 'Meat & Fish',
+    slug: 'meat-fish',
+    iconName: 'Fish',
+    description: 'Fresh chicken, mutton, fish and seafood',
+    image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&w=600&q=80',
+    productCount: 11,
+  },
 ];
