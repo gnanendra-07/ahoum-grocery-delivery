@@ -26,7 +26,7 @@ export const LocationSelectionPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-[80vh] flex flex-col justify-between p-6 bg-white rounded-3xl border border-gray-100 shadow-md my-2 space-y-6">
+    <div className="max-w-md mx-auto min-h-screen sm:min-h-[80vh] flex flex-col justify-between p-6 bg-white sm:rounded-3xl border border-gray-100 shadow-md space-y-6">
       {/* Header */}
       <div className="space-y-1">
         <span className="text-[11px] font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-2.5 py-1 rounded-full">

@@ -8,7 +8,7 @@ export const SplashScreenPage: React.FC = () => {
   const { isAuthenticated } = useAuthStore();
 
   return (
-    <div className="min-h-[85vh] flex flex-col justify-between items-center text-center p-6 bg-gradient-to-b from-brand-900 via-brand-800 to-brand-950 text-white rounded-3xl shadow-xl overflow-hidden relative border border-brand-700/50 my-2">
+    <div className="min-h-screen sm:min-h-[85vh] flex flex-col justify-between items-center text-center p-6 bg-gradient-to-b from-brand-900 via-brand-800 to-brand-950 text-white sm:rounded-3xl shadow-xl overflow-hidden relative border border-brand-700/50">
       {/* Glow Effects */}
       <div className="absolute -top-24 -left-24 w-72 h-72 bg-brand-500/20 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -right-24 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />

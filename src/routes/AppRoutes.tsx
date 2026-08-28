@@ -1,6 +1,9 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from '../layouts/MainLayout';
+import { AuthLayout } from '../layouts/AuthLayout';
+
+// Grocery App Main Pages
 import { HomePage } from '../pages/HomePage';
 import { CategoryPage } from '../pages/CategoryPage';
 import { ProductDetailPage } from '../pages/ProductDetailPage';
@@ -24,8 +27,8 @@ import { SignUpPage } from '../pages/auth/SignUpPage';
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      {/* 1. Main Grocery App Routes (Includes Header & BottomNav) */}
       <Route path="/" element={<MainLayout />}>
-        {/* Grocery App Main Routes */}
         <Route index element={<HomePage />} />
         <Route path="category/:slug" element={<CategoryPage />} />
         <Route path="product/:id" element={<ProductDetailPage />} />
@@ -35,8 +38,10 @@ export const AppRoutes: React.FC = () => {
         <Route path="checkout" element={<CheckoutPage />} />
         <Route path="checkout/success" element={<CheckoutSuccessPage />} />
         <Route path="checkout/failure" element={<CheckoutFailurePage />} />
+      </Route>
 
-        {/* Figma Authentication & Onboarding Flow Routes */}
+      {/* 2. Dedicated Auth & Onboarding Routes (Full-screen, NO Header/BottomNav) */}
+      <Route element={<AuthLayout />}>
         <Route path="welcome" element={<SplashScreenPage />} />
         <Route path="onboarding" element={<OnboardingPage />} />
         <Route path="auth" element={<AuthLandingPage />} />
@@ -45,10 +50,10 @@ export const AppRoutes: React.FC = () => {
         <Route path="auth/location" element={<LocationSelectionPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="signup" element={<SignUpPage />} />
-
-        {/* Catch-all redirect */}
-        <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
+
+      {/* Catch-all redirect */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 };

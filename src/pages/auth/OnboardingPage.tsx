@@ -67,7 +67,7 @@ export const OnboardingPage: React.FC = () => {
   const IconComponent = activeSlide.icon;
 
   return (
-    <div className="max-w-md mx-auto min-h-[80vh] flex flex-col justify-between p-6 bg-white rounded-3xl border border-gray-100 shadow-md relative overflow-hidden my-2">
+    <div className="max-w-md mx-auto min-h-screen sm:min-h-[80vh] flex flex-col justify-between p-6 bg-white sm:rounded-3xl border border-gray-100 shadow-md relative overflow-hidden">
       {/* Header Skip button */}
       <div className="flex items-center justify-between z-10">
         <div className="flex items-center gap-1.5">

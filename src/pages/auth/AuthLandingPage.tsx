@@ -13,7 +13,7 @@ export const AuthLandingPage: React.FC = () => {
   };
 
   return (
-    <div className="max-w-md mx-auto min-h-[80vh] flex flex-col justify-between p-6 bg-white rounded-3xl border border-gray-100 shadow-md relative overflow-hidden my-2">
+    <div className="max-w-md mx-auto min-h-screen sm:min-h-[80vh] flex flex-col justify-between p-6 bg-white sm:rounded-3xl border border-gray-100 shadow-md relative overflow-hidden">
       {/* Top Header branding */}
       <div className="text-center space-y-3 pt-4">
         <div className="w-16 h-16 bg-brand-50 text-brand-600 rounded-2xl flex items-center justify-center mx-auto shadow-sm border border-brand-100">
