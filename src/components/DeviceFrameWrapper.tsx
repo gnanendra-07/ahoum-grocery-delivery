@@ -9,7 +9,7 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
   children,
   bgColor = 'bg-gray-50',
 }) => {
-  const [scale, setScale] = useState<number>(0.85);
+  const [scale, setScale] = useState<number>(1);
   const [isDesktop, setIsDesktop] = useState<boolean>(false);
 
   useEffect(() => {
@@ -17,14 +17,14 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
       const desktop = window.innerWidth >= 640;
       setIsDesktop(desktop);
       if (desktop) {
-        const paddingW = 40;
-        const paddingH = 40;
+        const paddingW = 32;
+        const paddingH = 32;
         const availableW = window.innerWidth - paddingW;
         const availableH = window.innerHeight - paddingH;
         const scaleW = availableW / 414;
         const scaleH = availableH / 896;
-        // Cap desktop phone preview scale at 0.85 for a compact, neatly centered phone mockup
-        const fitScale = Math.min(0.85, Math.min(scaleW, scaleH));
+        // Exact restored desktop preview scaling (capped at 1.0 MAX)
+        const fitScale = Math.min(1, Math.min(scaleW, scaleH));
         setScale(Math.max(0.4, fitScale));
       } else {
         setScale(1);
@@ -45,7 +45,7 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
     );
   }
 
-  // Desktop compact phone mockup preview frame (>=640px)
+  // Desktop phone mockup preview frame (>=640px)
   const scaledWidth = 414 * scale;
   const scaledHeight = 896 * scale;
 
@@ -59,7 +59,7 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
         }}
         className="relative flex items-center justify-center flex-shrink-0"
       >
-        {/* Compact 414 x 896 CSS px Source Phone Frame */}
+        {/* Fixed 414 x 896 CSS px Source Phone Frame */}
         <div
           style={{
             transform: `scale(${scale})`,
