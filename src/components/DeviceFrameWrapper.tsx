@@ -17,13 +17,15 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
       const desktop = window.innerWidth >= 640;
       setIsDesktop(desktop);
       if (desktop) {
-        const padding = 32;
-        const availableW = window.innerWidth - padding;
-        const availableH = window.innerHeight - padding;
+        // Tight padding around phone frame for maximal preview size
+        const paddingW = 20;
+        const paddingH = 20;
+        const availableW = window.innerWidth - paddingW;
+        const availableH = window.innerHeight - paddingH;
         const scaleW = availableW / 414;
         const scaleH = availableH / 896;
         const fitScale = Math.min(1, Math.min(scaleW, scaleH));
-        setScale(Math.max(0.35, fitScale));
+        setScale(Math.max(0.45, fitScale));
       } else {
         setScale(1);
       }
@@ -37,7 +39,7 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
   if (!isDesktop) {
     // Real mobile viewport layout (<640px): Fullscreen 100dvh
     return (
-      <div className={`w-full h-[100dvh] ${bgColor} flex flex-col relative overflow-y-auto overflow-x-hidden`}>
+      <div className={`w-full h-[100dvh] ${bgColor} flex flex-col relative overflow-y-auto overflow-x-hidden no-scrollbar`}>
         {children}
       </div>
     );
@@ -63,7 +65,7 @@ export const DeviceFrameWrapper: React.FC<DeviceFrameWrapperProps> = ({
             transform: `scale(${scale})`,
             transformOrigin: 'center center',
           }}
-          className={`w-[414px] h-[896px] ${bgColor} rounded-[44px] shadow-2xl border-[8px] border-slate-800 flex flex-col relative overflow-y-auto overflow-x-hidden box-border flex-shrink-0`}
+          className={`w-[414px] h-[896px] ${bgColor} rounded-[44px] shadow-2xl border-[8px] border-slate-800 flex flex-col relative overflow-y-auto overflow-x-hidden box-border flex-shrink-0 no-scrollbar`}
         >
           {children}
         </div>
